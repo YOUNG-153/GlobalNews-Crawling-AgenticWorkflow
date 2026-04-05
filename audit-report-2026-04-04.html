@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GlobalNews Crawling System — 종합 감사 보고서 2026-04-04</title>
+<style>
+  :root {
+    --bg: #fafafa; --surface: #fff; --border: #e0e0e0;
+    --text: #1a1a1a; --muted: #666; --accent: #1a56db;
+    --critical: #dc2626; --high: #ea580c; --medium: #d97706;
+    --low: #2563eb; --info: #059669; --pass: #16a34a;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; }
+  .container { max-width: 1100px; margin: 0 auto; padding: 40px 24px; }
+
+  /* Header */
+  .report-header { background: linear-gradient(135deg, #1e293b 0%, #334155 100%); color: #fff; padding: 48px 40px; border-radius: 12px; margin-bottom: 32px; }
+  .report-header h1 { font-size: 28px; font-weight: 800; margin-bottom: 8px; letter-spacing: -0.5px; }
+  .report-header .subtitle { font-size: 16px; color: #94a3b8; margin-bottom: 24px; }
+  .report-header .meta-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
+  .meta-item { background: rgba(255,255,255,0.08); border-radius: 8px; padding: 12px 16px; }
+  .meta-item .label { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #94a3b8; }
+  .meta-item .value { font-size: 18px; font-weight: 700; color: #fff; }
+
+  /* Sections */
+  .section { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 32px; margin-bottom: 24px; }
+  .section h2 { font-size: 20px; font-weight: 700; color: var(--text); border-bottom: 2px solid var(--accent); padding-bottom: 8px; margin-bottom: 20px; }
+  .section h3 { font-size: 16px; font-weight: 700; color: #374151; margin: 20px 0 12px; }
+  .section h4 { font-size: 14px; font-weight: 600; color: #4b5563; margin: 16px 0 8px; }
+  p, li { font-size: 14px; line-height: 1.8; }
+  p { margin-bottom: 12px; }
+  ul, ol { padding-left: 20px; margin-bottom: 12px; }
+  li { margin-bottom: 4px; }
+  code { background: #f1f5f9; padding: 2px 6px; border-radius: 4px; font-size: 13px; font-family: 'JetBrains Mono', 'Fira Code', monospace; }
+
+  /* Tables */
+  table { width: 100%; border-collapse: collapse; margin: 12px 0 20px; font-size: 13px; }
+  th { background: #f8fafc; font-weight: 700; text-align: left; padding: 10px 12px; border-bottom: 2px solid var(--border); white-space: nowrap; }
+  td { padding: 8px 12px; border-bottom: 1px solid #f1f5f9; vertical-align: top; }
+  tr:hover td { background: #f8fafc; }
+  .num { text-align: right; font-variant-numeric: tabular-nums; }
+
+  /* Severity badges */
+  .badge { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+  .badge-critical { background: #fef2f2; color: var(--critical); border: 1px solid #fecaca; }
+  .badge-high { background: #fff7ed; color: var(--high); border: 1px solid #fed7aa; }
+  .badge-medium { background: #fffbeb; color: var(--medium); border: 1px solid #fde68a; }
+  .badge-low { background: #eff6ff; color: var(--low); border: 1px solid #bfdbfe; }
+  .badge-info { background: #ecfdf5; color: var(--info); border: 1px solid #a7f3d0; }
+  .badge-pass { background: #f0fdf4; color: var(--pass); border: 1px solid #bbf7d0; }
+  .badge-fail { background: #fef2f2; color: var(--critical); border: 1px solid #fecaca; }
+
+  /* Score cards */
+  .score-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin: 16px 0; }
+  .score-card { border: 1px solid var(--border); border-radius: 8px; padding: 16px; text-align: center; }
+  .score-card .score { font-size: 32px; font-weight: 800; }
+  .score-card .label { font-size: 12px; color: var(--muted); margin-top: 4px; }
+  .score-a { color: var(--pass); border-color: #bbf7d0; background: #f0fdf4; }
+  .score-b { color: var(--accent); border-color: #bfdbfe; background: #eff6ff; }
+  .score-c { color: var(--medium); border-color: #fde68a; background: #fffbeb; }
+  .score-d { color: var(--high); border-color: #fed7aa; background: #fff7ed; }
+
+  /* Progress bars */
+  .progress-bar { height: 8px; background: #e5e7eb; border-radius: 4px; overflow: hidden; margin: 4px 0; }
+  .progress-fill { height: 100%; border-radius: 4px; transition: width 0.3s; }
+  .fill-green { background: var(--pass); }
+  .fill-yellow { background: var(--medium); }
+  .fill-red { background: var(--critical); }
+
+  /* TOC */
+  .toc { background: #f8fafc; border: 1px solid var(--border); border-radius: 8px; padding: 20px 24px; margin-bottom: 24px; }
+  .toc h3 { margin: 0 0 12px; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); }
+  .toc ol { list-style: none; padding: 0; counter-reset: toc; }
+  .toc li { counter-increment: toc; margin-bottom: 6px; }
+  .toc li::before { content: counter(toc, decimal-leading-zero); font-weight: 700; color: var(--accent); margin-right: 8px; font-size: 12px; }
+  .toc a { text-decoration: none; color: var(--text); font-size: 14px; }
+  .toc a:hover { color: var(--accent); }
+
+  /* Callout */
+  .callout { border-left: 4px solid; padding: 12px 16px; margin: 16px 0; border-radius: 0 8px 8px 0; font-size: 13px; }
+  .callout-critical { border-color: var(--critical); background: #fef2f2; }
+  .callout-warning { border-color: var(--medium); background: #fffbeb; }
+  .callout-info { border-color: var(--accent); background: #eff6ff; }
+  .callout-success { border-color: var(--pass); background: #f0fdf4; }
+
+  /* Print */
+  @media print {
+    body { background: #fff; }
+    .section { break-inside: avoid; box-shadow: none; border: 1px solid #ccc; }
+    .report-header { background: #1e293b !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .container { padding: 16px; }
+    .report-header { padding: 24px 20px; }
+    .report-header h1 { font-size: 22px; }
+    .meta-grid { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+<!-- ============================================================ -->
+<!-- HEADER -->
+<!-- ============================================================ -->
+<div class="report-header">
+  <h1>GlobalNews Crawling &amp; Analysis System</h1>
+  <div class="subtitle">종합 감사 보고서 (Comprehensive Audit Report)</div>
+  <div class="meta-grid">
+    <div class="meta-item">
+      <div class="label">감사 일자</div>
+      <div class="value">2026-04-04</div>
+    </div>
+    <div class="meta-item">
+      <div class="label">시스템 버전</div>
+      <div class="value">v1.0 (20/20 Steps)</div>
+    </div>
+    <div class="meta-item">
+      <div class="label">소스 파일</div>
+      <div class="value">171개 / 50,807 LOC</div>
+    </div>
+    <div class="meta-item">
+      <div class="label">크롤링 대상</div>
+      <div class="value">116개 사이트</div>
+    </div>
+    <div class="meta-item">
+      <div class="label">Hook 인프라</div>
+      <div class="value">23개 / 13,490 LOC</div>
+    </div>
+    <div class="meta-item">
+      <div class="label">테스트 코��</div>
+      <div class="value">59개 / 26,627 LOC</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- TOC -->
+<!-- ============================================================ -->
+<div class="toc">
+  <h3>목차</h3>
+  <ol>
+    <li><a href="#exec">경영진 요약 (Executive Summary)</a></li>
+    <li><a href="#scope">감사 범위 및 방법론</a></li>
+    <li><a href="#scores">종합 평가 스코어카드</a></li>
+    <li><a href="#sites">크롤링 사이트 전수 감사 (핵심)</a></li>
+    <li><a href="#arch">아키텍처 및 코드 품질</a></li>
+    <li><a href="#workflow">워크플로우 및 품질 게이트</a></li>
+    <li><a href="#pipeline">파이프라인 실행 및 성능</a></li>
+    <li><a href="#security">보안 및 복원력</a></li>
+    <li><a href="#operational">운영 준비도</a></li>
+    <li><a href="#findings">발견사항 종합 (Findings Register)</a></li>
+    <li><a href="#recommendations">권고사항</a></li>
+  </ol>
+</div>
+
+<!-- ============================================================ -->
+<!-- 1. EXECUTIVE SUMMARY -->
+<!-- ============================================================ -->
+<div class="section" id="exec">
+  <h2>1. 경영진 요약 (Executive Summary)</h2>
+
+  <p>본 감사는 <strong>GlobalNews Crawling &amp; Analysis System</strong>의 설계, 구현, 운영 전반을 30년 경력 소프트웨어 전문가 관점에서 수행하였다. 4개 전문 감사 에이전트를 병렬 투입하여 <strong>사이트 레지스트리</strong>, <strong>코드 품질</strong>, <strong>워크플로우/Hook 인프���</strong>, <strong>파이프라인 실행/데이터</strong>를 독립적으로 조사하고 교차 검증하였다.</p>
+
+  <div class="callout callout-info">
+    <strong>핵심 결론:</strong> 본 시스템은 20단계 에이전틱 워크플로우로 설계·구축되어 <strong>116개 글로벌 뉴스 사이트</strong>를 크롤링하고 <strong>8단계 NLP 파��프라인</strong>으로 분석하는 프로덕션 수준의 시스템이다. 코드 품질과 아키텍처 설계는 우수하나, <strong>크롤링 실현율 42.4%</strong>(설계 대비 실수집), <strong>20개 사이트 미수집</strong>, <strong>cron 미설정</strong> 등 운영 수준의 갭이 존재한다.
+  </div>
+
+  <table>
+    <tr><th>감사 영역</th><th>등급</th><th>발견사항</th></tr>
+    <tr><td>아키텍처 설계</td><td><span class="badge badge-pass">A</span></td><td>5계층 분리, 순환 의존 없음, 일관된 패턴</td></tr>
+    <tr><td>크롤링 사이트 실현율</td><td><span class="badge badge-medium">C+</span></td><td>82.8% 사이트 수집, but 설계 대비 실수집률 42.4%</td></tr>
+    <tr><td>코드 품질</td><td><span class="badge badge-pass">A-</span></td><td>견고한 에러 처리, 타입 힌트 부분적</td></tr>
+    <tr><td>워크플로우 시스템</td><td><span class="badge badge-pass">A</span></td><td>20단계 완수, 4계층 품질 게이트 강제</td></tr>
+    <tr><td>NLP 분석 파이프라인</td><td><span class="badge badge-pass">A-</span></td><td>8단계 완전 구현, Stage 3 타임아웃 위험</td></tr>
+    <tr><td>운영 준비도</td><td><span class="badge badge-medium">B-</span></td><td>cron 미설정, 모��터링 부재</td></tr>
+    <tr><td>보안</td><td><span class="badge badge-pass">A</span></td><td>하드코딩 시크릿 없음, Hook 기반 안전장치</td></tr>
+    <tr><td>테스트 커버리지</td><td><span class="badge badge-info">B+</span></td><td>59개 테스트 파일, 핵심 경로 커버</td></tr>
+  </table>
+</div>
+
+<!-- ============================================================ -->
+<!-- 2. SCOPE -->
+<!-- ============================================================ -->
+<div class="section" id="scope">
+  <h2>2. 감사 범위 및 방법론</h2>
+
+  <h3>2.1 감사 범위</h3>
+  <table>
+    <tr><th>영역</th><th>대상</th><th>방법</th></tr>
+    <tr><td>사이트 레지스트리</td><td><code>data/config/sources.yaml</code> (116개 사이트)</td><td>전수 조사 + 어댑터 교차 대조</td></tr>
+    <tr><td>소스 코드</td><td><code>src/</code> (171개 파일, 50,807 LOC)</td><td>핵심 모듈 샘플링 + 패�� 분석</td></tr>
+    <tr><td>어댑터 구현</td><td><code>src/crawling/adapters/</code> (123개 어댑터)</td><td>전수 교차 대조</td></tr>
+    <tr><td>Hook 인프라</td><td><code>.claude/hooks/scripts/</code> (23개, 13,490 LOC)</td><td>전수 조사</td></tr>
+    <tr><td>워크플로��</td><td><code>prompt/workflow.md</code> (20단계)</td><td>단계별 검증 기준 확인</td></tr>
+    <tr><td>실행 데이터</td><td><code>data/raw/</code> (23개 날짜, 228MB)</td><td>수집 결과 통계 분석</td></tr>
+    <tr><td>테��트</td><td><code>tests/</code> (59개 ��일, 26,627 LOC)</td><td>커버리지 영역 분석</td></tr>
+    <tr><td>에이전트</td><td><code>.claude/agents/</code> (36개)</td><td>범위 중복 분석</td></tr>
+  </table>
+
+  <h3>2.2 감사 방���론</h3>
+  <p>4개 전문 감사 에이전트를 독립적으로 병렬 ���입하여 교차 검증(cross-validation)을 수행하였다:</p>
+  <ol>
+    <li><strong>사이트 레지스트리 감사 에이전트</strong> — 116개 사이트 전수 대조, 어댑터 매핑, RSS/DOM 전략 검증</li>
+    <li><strong>코드 품질 감사 에이전트</strong> — 아키텍처, 에러 처리, 보안, 성능 패턴 분석</li>
+    <li><strong>워크플로우/Hook 감사 에이전트</strong> — 20단계 설계, Hook 복잡도, 품질 게이트 강제성 검증</li>
+    <li><strong>파이프라인 실행 감사 에이전트</strong> — 실행 데이터, 의존성, 운영 준비도 검증</li>
+  </ol>
+</div>
+
+<!-- ============================================================ -->
+<!-- 3. SCORECARD -->
+<!-- ============================================================ -->
+<div class="section" id="scores">
+  <h2>3. 종합 평가 스코어카드</h2>
+
+  <div class="score-grid">
+    <div class="score-card score-a"><div class="score">A</div><div class="label">아키텍처 설계</div></div>
+    <div class="score-card score-c"><div class="score">C+</div><div class="label">사이트 실현율</div></div>
+    <div class="score-card score-a"><div class="score">A-</div><div class="label">코드 품질</div></div>
+    <div class="score-card score-a"><div class="score">A</div><div class="label">워크플로우</div></div>
+    <div class="score-card score-a"><div class="score">A-</div><div class="label">NLP 파이프라인</div></div>
+    <div class="score-card score-b"><div class="score">B-</div><div class="label">운영 준비도</div></div>
+    <div class="score-card score-a"><div class="score">A</div><div class="label">보안</div></div>
+    <div class="score-card score-b"><div class="score">B+</div><div class="label">테스트 커버리지</div></div>
+  </div>
+
+  <h3>발견사항 심각도 분포</h3>
+  <table>
+    <tr><th>심각도</th><th>건수</th><th>주요 항목</th></tr>
+    <tr><td><span class="badge badge-critical">Critical</span></td><td class="num">2</td><td>cron 미설정, Python 3.14 호환성</td></tr>
+    <tr><td><span class="badge badge-high">High</span></td><td class="num">5</td><td>20개 사이트 미수집, 실현율 갭, _context_lib 모놀리스, _crawl_urls 324줄 함수</td></tr>
+    <tr><td><span class="badge badge-medium">Medium</span></td><td class="num">7</td><td>Stage 3 타임아웃, D-7 중복 유지부담, 피드 변동성, 디듭 TTL 미설정 등</td></tr>
+    <tr><td><span class="badge badge-low">Low</span></td><td class="num">4</td><td>문서 드리프트, 에이전트 수, Hook 타임아웃 문서화</td></tr>
+    <tr><td><span class="badge badge-info">Info</span></td><td class="num">5</td><td>우수 설계 패턴, 강점 하이라이트</td></tr>
+  </table>
+</div>
+
+<!-- ============================================================ -->
+<!-- 4. SITE AUDIT (CORE) -->
+<!-- ============================================================ -->
+<div class="section" id="sites">
+  <h2>4. 크롤링 사이트 전수 ���사 (핵심 섹션)</h2>
+
+  <div class="callout callout-critical">
+    <strong>핵심 발견:</strong> 116�� 사이트 중 <strong>96개(82.8%)</strong>가 기사를 수집하고 있으나, 설계 목표(일 12,637건) 대비 <strong>실수집률은 42.4%(5,359건)</strong>이다. 20개 사이트가 완전 미수집 상태이며, 이들의 추정 일일 손실량은 <strong>1,655건</strong>이다.
+  </div>
+
+  <h3>4.1 그룹별 사이트 현황</h3>
+  <table>
+    <tr><th>그룹</th><th>명칭</th><th>사��트 수</th><th>수집 사이트</th><th>수집률</th><th>미수집</th></tr>
+    <tr><td>A</td><td>한국 주요 일간지</td><td class="num">5</td><td class="num">5</td><td class="num">100%</td><td>-</td></tr>
+    <tr><td>B</td><td>한국 경제</td><td class="num">3</td><td class="num">3</td><td class="num">100%</td><td>-</td></tr>
+    <tr><td>C</td><td>한국 전문</td><td class="num">2</td><td class="num">2</td><td class="num">100%</td><td>-</td></tr>
+    <tr><td>D</td><td>한국 IT/과학</td><td class="num">8</td><td class="num">5</td><td class="num">63%</td><td>38north, ddaily, etnews</td></tr>
+    <tr><td>E</td><td>영어권 서방</td><td class="num">23</td><td class="num">16</td><td class="num">70%</td><td>abcnews, cityam, investing_com, yahoo_finance, natureasia, euobserver*, seekingalpha*</td></tr>
+    <tr><td>F</td><td>아시아태평양</td><td class="num">22</td><td class="num">19</td><td class="num">86%</td><td>globaltimes, jakartapost, yomiuri</td></tr>
+    <tr><td>G</td><td>유럽/중동</td><td class="num">36</td><td class="num">32</td><td class="num">89%</td><td>balkaninsight, bild, grapevine, middleeasteye, ruv_english*, wyborcza</td></tr>
+    <tr><td>H</td><td>아프리카</td><td class="num">4</td><td class="num">3</td><td class="num">75%</td><td>dailymaverick</td></tr>
+    <tr><td>I</td><td>라틴아메리카</td><td class="num">9</td><td class="num">8</td><td class="num">89%</td><td>clarin*</td></tr>
+    <tr><td>J</td><td>러시아/중앙아</td><td class="num">4</td><td class="num">3</td><td class="num">75%</td><td>gogo_mn*</td></tr>
+    <tr style="font-weight:700; background:#f8fafc;"><td colspan="2">합계</td><td class="num">116</td><td class="num">96</td><td class="num">82.8%</td><td>20개</td></tr>
+  </table>
+  <p style="font-size:12px; color: var(--muted);">* 표시: 간헐적 수집 (일부 날짜에서 1-2건 확인됨)</p>
+
+  <h3>4.2 크롤링 전략 분석</h3>
+  <table>
+    <tr><th>수집 방법</th><th>사이트 수</th><th>비율</th><th>비고</th></tr>
+    <tr><td>RSS 피드</td><td class="num">109</td><td class="num">94.0%</td><td>주력 전략. fallback으로 sitemap/DOM 지원</td></tr>
+    <tr><td>사이트맵</td><td class="num">5</td><td class="num">4.3%</td><td>buzzfeed, huffpost, taiwannews, thetimes, tv2_no</td></tr>
+    <tr><td>DOM 파싱</td><td class="num">2</td><td class="num">1.7%</td><td>joongang, philstar</td></tr>
+  </table>
+
+  <table>
+    <tr><th>페이월 유형</th><th>사이트 수</th><th>��율</th><th>수집 영향</th></tr>
+    <tr><td>없음 (free)</td><td class="num">85</td><td class="num">73.3%</td><td>전문 수집 가능</td></tr>
+    <tr><td>소프트 미터드</td><td class="num">27</td><td class="num">23.3%</td><td>일일 제한 있음, 대부분 수집 가능</td></tr>
+    <tr><td>하드 페이월</td><td class="num">4</td><td class="num">3.4%</td><td>제목+메타만 수집 (faz, nytimes, stratechery, thetimes)</td></tr>
+  </table>
+
+  <table>
+    <tr><th>봇 탐지 수준</th><th>사이트 수</th><th>비율</th><th>대응 전략</th></tr>
+    <tr><td>LOW</td><td class="num">36</td><td class="num">31%</td><td>기본 UA 로테이션</td></tr>
+    <tr><td>MEDIUM</td><td class="num">65</td><td class="num">56%</td><td>UA 풀 10종 + 요청 간격 조절</td></tr>
+    <tr><td>HIGH</td><td class="num">15</td><td class="num">13%</td><td>UA 풀 50종 + 프록시 + 지수 백오프</td></tr>
+  </table>
+
+  <h3>4.3 미수집 사이트 20개 상세 분���</h3>
+  <div class="callout callout-warning">
+    <strong>일일 추정 손실��:</strong> 1,655건/일 (설계 목표 12,637건의 13.1%)
+  </div>
+  <table>
+    <tr><th>사이트</th><th>그룹</th><th>��어</th><th>어댑터</th><th>추정 손실</th><th>원인 분석</th><th>심각도</th></tr>
+    <tr><td>yahoo_finance</td><td>E</td><td>en</td><td><span class="badge badge-fail">없음</span></td><td class="num">250/일</td><td>Generic 어댑터 한계 — JS 렌더링 필요 추정</td><td><span class="badge badge-high">High</span></td></tr>
+    <tr><td>bild</td><td>G</td><td>de</td><td><span class="badge badge-pass">있음</span></td><td class="num">200/일</td><td>독일어 페이월 + 공격적 봇 차단</td><td><span class="badge badge-high">High</span></td></tr>
+    <tr><td>yomiuri</td><td>F</td><td>ja</td><td><span class="badge badge-pass">있음</span></td><td class="num">200/일</td><td>일본어 문자셋/RSS 파싱 이슈</td><td><span class="badge badge-high">High</span></td></tr>
+    <tr><td>abcnews</td><td>E</td><td>en</td><td><span class="badge badge-fail">없음</span></td><td class="num">150/일</td><td>Generic 어댑터 한계</td><td><span class="badge badge-high">High</span></td></tr>
+    <tr><td>investing_com</td><td>E</td><td>en</td><td><span class="badge badge-fail">없음</span></td><td class="num">150/일</td><td>Generic 어댑터 한계 — 동적 콘텐츠</td><td><span class="badge badge-high">High</span></td></tr>
+    <tr><td>clarin</td><td>I</td><td>es</td><td><span class="badge badge-pass">있음</span></td><td class="num">100/일</td><td>페이월/소프트미터 차단</td><td><span class="badge badge-medium">Medium</span></td></tr>
+    <tr><td>cityam</td><td>E</td><td>en</td><td><span class="badge badge-fail">없음</span></td><td class="num">100/일</td><td>Generic 어댑터 한계</td><td><span class="badge badge-medium">Medium</span></td></tr>
+    <tr><td>etnews</td><td>D</td><td>ko</td><td><span class="badge badge-pass">있음</span></td><td class="num">100/일</td><td>한국어 문자셋/인코딩 이슈</td><td><span class="badge badge-medium">Medium</span></td></tr>
+    <tr><td>wyborcza</td><td>G</td><td>pl</td><td><span class="badge badge-pass">있음</span></td><td class="num">80/일</td><td>폴란드어 인코딩 + 페이월</td><td><span class="badge badge-medium">Medium</span></td></tr>
+    <tr><td>jakartapost</td><td>F</td><td>en</td><td><span class="badge badge-pass">있음</span></td><td class="num">60/일</td><td>RSS 피드 구조 변경 추정</td><td><span class="badge badge-medium">Medium</span></td></tr>
+    <tr><td>ddaily</td><td>D</td><td>ko</td><td><span class="badge badge-fail">없음</span></td><td class="num">50/일</td><td>전용 어댑터 미구현</td><td><span class="badge badge-medium">Medium</span></td></tr>
+    <tr><td>dailymaverick</td><td>H</td><td>en</td><td><span class="badge badge-fail">없음</span></td><td class="num">40/일</td><td>Generic 어댑터 한계</td><td><span class="badge badge-low">Low</span></td></tr>
+    <tr><td>globaltimes</td><td>F</td><td>en</td><td><span class="badge badge-pass">있음</span></td><td class="num">40/일</td><td>RSS 피드 구조 이슈</td><td><span class="badge badge-low">Low</span></td></tr>
+    <tr><td>middleeasteye</td><td>G</td><td>en</td><td><span class="badge badge-pass">있음</span></td><td class="num">40/일</td><td>RSS 피드 구조 이슈</td><td><span class="badge badge-low">Low</span></td></tr>
+    <tr><td>gogo_mn</td><td>J</td><td>mn</td><td><span class="badge badge-pass">있음</span></td><td class="num">30/일</td><td>몽골어 인코딩 한계</td><td><span class="badge badge-low">Low</span></td></tr>
+    <tr><td>balkaninsight</td><td>G</td><td>en</td><td><span class="badge badge-pass">있음</span></td><td class="num">20/일</td><td>HTTP 403 서킷 브레이커 발동</td><td><span class="badge badge-low">Low</span></td></tr>
+    <tr><td>grapevine</td><td>G</td><td>en</td><td><span class="badge badge-fail">없음</span></td><td class="num">15/일</td><td>Generic 어댑터 ���계</td><td><span class="badge badge-low">Low</span></td></tr>
+    <tr><td>ruv_english</td><td>G</td><td>en</td><td><span class="badge badge-fail">없음</span></td><td class="num">15/일</td><td>Generic 어댑터 한계</td><td><span class="badge badge-low">Low</span></td></tr>
+    <tr><td>natureasia</td><td>E</td><td>en</td><td><span class="badge badge-pass">있음</span></td><td class="num">10/일</td><td>소프트 페이월 탐지 이슈</td><td><span class="badge badge-low">Low</span></td></tr>
+    <tr><td>38north</td><td>D</td><td>en</td><td><span class="badge badge-fail">없음</span></td><td class="num">5/일</td><td>소량 발행 + Generic 한계</td><td><span class="badge badge-info">Info</span></td></tr>
+  </table>
+
+  <h3>4.4 어댑터 매핑 분석</h3>
+  <table>
+    <tr><th>구분</th><th>사이트 수</th><th>미수집 중</th><th>비고</th></tr>
+    <tr><td>전용 어댑터 보유</td><td class="num">107</td><td class="num">11</td><td>어댑터가 있어도 RSS 피드 변경/차단으로 미수집</td></tr>
+    <tr><td>Generic 어댑터 의존</td><td class="num">9</td><td class="num">9</td><td><strong>100% 미수집</strong> — Generic 전략의 한계가 명확</td></tr>
+    <tr><td>어댑터 파일 (총)</td><td class="num" colspan="2">123개</td><td>116 사이트 + 공유/유틸리티 어댑터 7개</td></tr>
+  </table>
+
+  <div class="callout callout-critical">
+    <strong>핵심 인사이트:</strong> Generic 어댑터에 의존하는 9개 사이트는 <strong>전부 미수집</strong> 상태이다. 이는 Generic 전략의 실효성에 근본적 의문을 제기한다. 특히 yahoo_finance(250건/일), abcnews(150건/일), investing_com(150건/일) 등 고수집량 사이트에 전용 어댑터가 없는 것은 설계상 유의미한 결함이다.
+  </div>
+
+  <h3>4.5 실현율 분석 (Yield Rate)</h3>
+  <table>
+    <tr><th>지표</th><th>설계 목표</th><th>실측 (최적일 기준)</th><th>달��률</th></tr>
+    <tr><td>일일 수집 기사</td><td class="num">12,637건</td><td class="num">5,359건</td><td class="num">42.4%</td></tr>
+    <tr><td>수집 가능 사이트</td><td class="num">116개</td><td class="num">104개</td><td class="num">89.7%</td></tr>
+    <tr><td>안정적 수집 사이트</td><td class="num">116개</td><td class="num">96개</td><td class="num">82.8%</td></tr>
+  </table>
+
+  <div class="progress-bar"><div class="progress-fill fill-yellow" style="width:42.4%"></div></div>
+  <p style="font-size:12px; color: var(--muted); text-align:center;">설계 대비 실현율: 42.4% (5,359/12,637)</p>
+
+  <h4>초과 수집 사이트 (설계 대비 200%+)</h4>
+  <table>
+    <tr><th>사���트</th><th>실측</th><th>설계</th><th>��성률</th><th>그룹</th></tr>
+    <tr><td>mt (머니투데이)</td><td class="num">655</td><td class="num">200</td><td class="num">328%</td><td>B</td></tr>
+    <tr><td>aftonbladet</td><td class="num">316</td><td class="num">100</td><td class="num">316%</td><td>G</td></tr>
+    <tr><td>bloter</td><td class="num">61</td><td class="num">20</td><td class="num">305%</td><td>D</td></tr>
+    <tr><td>rg (러시아 가제타)</td><td class="num">371</td><td class="num">150</td><td class="num">247%</td><td>J</td></tr>
+    <tr><td>clarin*</td><td class="num">216</td><td class="num">100</td><td class="num">216%</td><td>I</td></tr>
+    <tr><td>taiwannews</td><td class="num">64</td><td class="num">30</td><td class="num">213%</td><td>F</td></tr>
+  </table>
+  <p style="font-size:12px; color: var(--muted);">* clarin은 2026-03-24에 216건 수집되었으나 2026-03-29에는 0건 — 간헐적 차단 패턴</p>
+
+  <h3>4.6 언어별 커��리지</h3>
+  <table>
+    <tr><th>언어</th><th>사���트 수</th><th>비율</th><th>NLP 지원</th><th>특이사항</th></tr>
+    <tr><td>영어 (en)</td><td class="num">66</td><td class="num">57%</td><td><span class="badge badge-pass">Full</span></td><td>spaCy + RoBERTa</td></tr>
+    <tr><td>한국어 (ko)</td><td class="num">14</td><td class="num">12%</td><td><span class="badge badge-pass">Full</span></td><td>kiwipiepy + KoBERT</td></tr>
+    <tr><td>스페인어 (es)</td><td class="num">11</td><td class="num">9%</td><td><span class="badge badge-info">Partial</span></td><td>다국어 SBERT 임베딩</td></tr>
+    <tr><td>독���어 (de)</td><td class="num">5</td><td class="num">4%</td><td><span class="badge badge-info">Partial</span></td><td>다국어 SBERT 임베딩</td></tr>
+    <tr><td>일본어 (ja)</td><td class="num">3</td><td class="num">3%</td><td><span class="badge badge-info">Partial</span></td><td>문자셋 이슈 존재</td></tr>
+    <tr><td>이탈리아어 (it)</td><td class="num">3</td><td class="num">3%</td><td><span class="badge badge-info">Partial</span></td><td>다국어 SBERT 임베딩</td></tr>
+    <tr><td>기타 8��� 언어</td><td class="num">14</td><td class="num">12%</td><td><span class="badge badge-info">Partial</span></td><td>fr, pl, cs, no, pt, ru, sv, mn</td></tr>
+  </table>
+</div>
+
+<!-- ============================================================ -->
+<!-- 5. ARCHITECTURE -->
+<!-- ============================================================ -->
+<div class="section" id="arch">
+  <h2>5. 아키텍처 및 코드 품질</h2>
+
+  <h3>5.1 아키텍처 구조</h3>
+  <table>
+    <tr><th>계층</th><th>경로</th><th>책임</th><th>평가</th></tr>
+    <tr><td>크롤링 엔진</td><td><code>src/crawling/</code></td><td>116개 사이트 수집, 안티블록, 서킷브레이커</td><td><span class="badge badge-pass">A</span></td></tr>
+    <tr><td>분석 파이���라인</td><td><code>src/analysis/</code></td><td>8단계 NLP (전처리→시그널)</td><td><span class="badge badge-pass">A-</span></td></tr>
+    <tr><td>저장소</td><td><code>src/storage/</code></td><td>Parquet ZSTD + SQLite FTS5/vec</td><td><span class="badge badge-pass">A</span></td></tr>
+    <tr><td>유틸��티</td><td><code>src/utils/</code></td><td>로깅, 설정, 에러 처리, 자기복구</td><td><span class="badge badge-pass">A</span></td></tr>
+    <tr><td>어댑터</td><td><code>src/crawling/adapters/</code></td><td>사이트별 추출 로직 (123개)</td><td><span class="badge badge-info">B+</span></td></tr>
+  </table>
+
+  <div class="callout callout-success">
+    <strong>강점:</strong> 순환 의존 없음. 5계층 분리가 명확하며, 각 계층은 인터페이스를 통해 통신한다. <code>base_adapter.py</code>(570줄)가 일관된 어댑터 계약(contract)을 정의하고, 모든 123개 어댑터가 이를 준���한다.
+  </div>
+
+  <h3>5.2 코드 품질 지표</h3>
+  <table>
+    <tr><th>지표</th><th>측정값</th><th>기준</th><th>평가</th></tr>
+    <tr><td>소스 LOC</td><td class="num">50,807</td><td>-</td><td>대규모 프로젝트</td></tr>
+    <tr><td>테스트 LOC</td><td class="num">26,627</td><td>소스의 50%+</td><td><span class="badge badge-pass">52.4%</span></td></tr>
+    <tr><td>타입 힌트 (analysis/)</td><td class="num">~74%</td><td>80%+</td><td><span class="badge badge-info">양���</span></td></tr>
+    <tr><td>타입 힌트 (crawling/pipeline.py)</td><td class="num">100% (32/32)</td><td>80%+</td><td><span class="badge badge-pass">통과</span> [감사 교정]</td></tr>
+    <tr><td>최대 함수 길이</td><td class="num">324줄 (_crawl_urls)</td><td>100줄 이하</td><td><span class="badge badge-medium">주의</span></td></tr>
+    <tr><td>하드코딩 시크릿</td><td class="num">0건</td><td>0건</td><td><span class="badge badge-pass">통과</span></td></tr>
+  </table>
+
+  <h3>5.3 에러 처리 및 복원력</h3>
+  <p>크롤링 파이프라인은 <strong>4단계 재시도 체계</strong>를 구현한다:</p>
+  <table>
+    <tr><th>단계</th><th>최대 시도</th><th>전략</th></tr>
+    <tr><td>L1 — 기본 재시도</td><td class="num">3회</td><td>지수 백오프 + 지터</td></tr>
+    <tr><td>L2 — UA 에스컬레이션</td><td class="num">5회</td><td>User-Agent 풀 로테이션</td></tr>
+    <tr><td>L3 — 프록시 전환</td><td class="num">3회</td><td>프록시 리전 변경</td></tr>
+    <tr><td>L4 — 브라우저 렌더링</td><td class="num">2회</td><td>Playwright headless</td></tr>
+    <tr style="font-weight:700;"><td>합계</td><td class="num">최대 90회/URL</td><td>14개 전략 에스컬레이션</td></tr>
+  </table>
+
+  <h3>5.4 주요 코드 발견사항</h3>
+  <table>
+    <tr><th>ID</th><th>심각도</th><th>발견</th><th>위치</th><th>권고</th></tr>
+    <tr><td>CQ-1</td><td><span class="badge badge-medium">Medium</span></td><td><code>_crawl_urls()</code> 324줄 단일 함수 [감사 교정: fetch_via_cache_proxies는 존재하지 않음]</td><td>crawling/pipeline.py</td><td>장기 리팩토링 검토</td></tr>
+    <tr><td>CQ-2</td><td><span class="badge badge-info">Info</span></td><td>crawling/pipeline.py 타입 힌트 100% (32/32) [감사 교정: 44.4%는 오류]</td><td>crawling/pipeline.py</td><td>수정 불필요</td></tr>
+    <tr><td>CQ-3</td><td><span class="badge badge-high">High</span></td><td>Never-Abandon 14개 fallback 전략 미테스트</td><td>crawling/</td><td>에스컬레이션 통합 테스트 추가</td></tr>
+    <tr><td>CQ-4</td><td><span class="badge badge-medium">Medium</span></td><td>어댑터 123개 중 테스트는 구조적 검증만</td><td>tests/crawling/adapters/</td><td>사이트별 추출 결과 스냅샷 테스트 추가</td></tr>
+    <tr><td>CQ-5</td><td><span class="badge badge-info">Info</span></td><td>원자적 파일 쓰기로 데이터 손상 ���지</td><td>storage/parquet_writer.py</td><td>우수 패턴 — 유지</td></tr>
+  </table>
+</div>
+
+<!-- ============================================================ -->
+<!-- 6. WORKFLOW -->
+<!-- ============================================================ -->
+<div class="section" id="workflow">
+  <h2>6. 워크플로우 및 품질 게이트</h2>
+
+  <h3>6.1 20단계 워크플로우 완수 현황</h3>
+  <p>전체 20단계가 완수되었으며(<code>status: complete</code>), 각 단계의 pACS 품질 점수가 기록되어 있다:</p>
+  <table>
+    <tr><th>��계</th><th>단계명</th><th>유형</th><th>pACS</th><th>등급</th></tr>
+    <tr><td>1</td><td>사이트 정찰</td><td>Research</td><td class="num">70</td><td><span class="badge badge-medium">YELLOW</span></td></tr>
+    <tr><td>2</td><td>기술 검증</td><td>Research (team)</td><td class="num">74</td><td><span class="badge badge-pass">GREEN</span></td></tr>
+    <tr><td>3</td><td>크롤링 실행가능성</td><td>Research</td><td class="num">72</td><td><span class="badge badge-pass">GREEN</span></td></tr>
+    <tr><td>4</td><td>연구 리뷰</td><td>Human</td><td>-</td><td>-</td></tr>
+    <tr><td>5</td><td>아키텍처 블루프린트</td><td>Planning</td><td class="num">78</td><td><span class="badge badge-pass">GREEN</span></td></tr>
+    <tr><td>6</td><td>크롤링 전략</td><td>Planning (team)</td><td class="num">72</td><td><span class="badge badge-pass">GREEN</span></td></tr>
+    <tr><td>7</td><td>분석 파이프라인 설계</td><td>Planning</td><td class="num">80</td><td><span class="badge badge-pass">GREEN</span></td></tr>
+    <tr><td>8</td><td>설계 승인</td><td>Human</td><td class="num">80</td><td><span class="badge badge-pass">GREEN</span></td></tr>
+    <tr><td>9-17</td><td>구현 (9단계)</td><td>Implementation</td><td class="num">65-84</td><td><span class="badge badge-pass">GREEN</span></td></tr>
+    <tr><td>18</td><td>최종 리뷰</td><td>Human</td><td class="num">80</td><td><span class="badge badge-pass">GREEN</span></td></tr>
+    <tr><td>19-20</td><td>문서화 + 최종 검토</td><td>Implementation</td><td class="num">78-82</td><td><span class="badge badge-pass">GREEN</span></td></tr>
+  </table>
+
+  <h3>6.2 품질 게이트 시스템</h3>
+  <p>4계층 품질 게이트가 <strong>코드 수준에서 강제</strong>된다 (Advisory가 아님):</p>
+  <table>
+    <tr><th>계층</th><th>명칭</th><th>검증 방식</th><th>강제 수준</th></tr>
+    <tr><td>L0</td><td>Anti-Skip Guard</td><td>산출물 파일 존재 + 최소 크기(100B)</td><td><span class="badge badge-critical">Hard Block</span></td></tr>
+    <tr><td>L1</td><td>Verification Gate</td><td>verification-logs 존재 + PASS 확인</td><td><span class="badge badge-critical">Hard Block</span></td></tr>
+    <tr><td>L1.5</td><td>pACS Self-Rating</td><td>pACS 점수 &ge; 50 (RED zone 차단)</td><td><span class="badge badge-critical">Hard Block</span></td></tr>
+    <tr><td>L2</td><td>Adversarial Review</td><td>Review verdict &ne; FAIL</td><td><span class="badge badge-medium">Soft Block</span></td></tr>
+  </table>
+  <p><code>sot_manager.py --advance-step</code>이 SM5a-SM5d 증거를 검증하지 않으면 단계 진행이 <strong>물리적으로 불가능</strong>하다. <code>--force</code> 우회 시 감사 로그(<code>sm5-force-audit.jsonl</code>)에 기록된다.</p>
+
+  <h3>6.3 Hook 인프라</h3>
+  <table>
+    <tr><th>구분</th><th>스크립트 수</th><th>LOC</th><th>역할</th></tr>
+    <tr><td>컨텍스트 보존</td><td class="num">4</td><td class="num">~70KB</td><td>세션 스냅샷, 복원, Knowledge Archive</td></tr>
+    <tr><td>안전 차단</td><td class="num">4</td><td class="num">~24KB</td><td>파괴적 명령, 시크릿 유출, 테스트 파일 보호</td></tr>
+    <tr><td>검증 게이트</td><td class="num">10</td><td class="num">~48KB</td><td>pACS, Review, Verification, Traceability 등</td></tr>
+    <tr><td>설정/유지보수</td><td class="num">2</td><td class="num">~50KB</td><td>초기화 건강 검증, 주기적 점검</td></tr>
+    <tr><td>공유 라이브러리</td><td class="num">1</td><td class="num">7,542줄</td><td><code>_context_lib.py</code> — 104개 함수</td></tr>
+    <tr style="font-weight:700; background:#f8fafc;"><td>합계</td><td class="num">23</td><td class="num">13,490줄</td><td>-</td></tr>
+  </table>
+
+  <div class="callout callout-warning">
+    <strong>발견 WF-1:</strong> <code>_context_lib.py</code>가 7,542줄(104개 함수)로 모놀리식이다. 9개 스크립트가 이를 의존한다. 기능적으로는 정당하나(복잡한 결정론적 검증), 유지보수 부담이 높다. 분할 권고: <code>_pacs_lib.py</code>, <code>_sot_lib.py</code>, <code>_team_lib.py</code>.
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- 7. PIPELINE EXECUTION -->
+<!-- ============================================================ -->
+<div class="section" id="pipeline">
+  <h2>7. 파이프라인 실행 및 성능</h2>
+
+  <h3>7.1 실행 이력</h3>
+  <table>
+    <tr><th>날짜</th><th>수집 기사</th><th>수집 사이트</th><th>분석 완료</th></tr>
+    <tr><td>2026-03-29</td><td class="num">2,036</td><td class="num">96</td><td><span class="badge badge-medium">미확인</span></td></tr>
+    <tr><td>2026-03-26</td><td class="num">4,683</td><td class="num">-</td><td><span class="badge badge-pass">Stage 1-8 완���</span></td></tr>
+    <tr><td>2026-03-25</td><td class="num">4,437</td><td class="num">-</td><td>-</td></tr>
+    <tr><td>2026-03-24</td><td class="num">5,359</td><td class="num">104</td><td>-</td></tr>
+    <tr><td>2026-03-23</td><td class="num">3,137</td><td class="num">-</td><td>-</td></tr>
+    <tr><td>2026-03-22</td><td class="num">2,458</td><td class="num">-</td><td>-</td></tr>
+    <tr><td>2026-03-21</td><td class="num">4,069</td><td class="num">-</td><td>-</td></tr>
+  </table>
+  <p>총 23개 날짜에 크롤링이 수행되었으며, 원시 데이터 합계 228MB이다.</p>
+
+  <h3>7.2 분석 파이프라인 성능 (2026-03-26 기준)</h3>
+  <table>
+    <tr><th>단계</th><th>명칭</th><th>소요 시간</th><th>비중</th><th>비고</th></tr>
+    <tr><td>Stage 1</td><td>전처리</td><td class="num">100.3초</td><td class="num">1.4%</td><td>JSONL → Parquet</td></tr>
+    <tr><td>Stage 2</td><td>피처 추출</td><td class="num">938.5초</td><td class="num">13.3%</td><td>SBERT 임베딩 + TF-IDF</td></tr>
+    <tr><td>Stage 3</td><td>기사 분석</td><td class="num">5,850.7초</td><td class="num">82.8%</td><td>NER + 감성 + 분류 <span class="badge badge-high">병목</span></td></tr>
+    <tr><td>Stage 4</td><td>토픽 집계</td><td class="num">119.4초</td><td class="num">1.7%</td><td>BERTopic + HDBSCAN</td></tr>
+    <tr><td>Stage 5</td><td>시계열</td><td class="num">21.8초</td><td class="num">0.3%</td><td>STL + PELT + Prophet</td></tr>
+    <tr><td>Stage 6</td><td>교차 분석</td><td class="num">32.2초</td><td class="num">0.5%</td><td>네트워크 분석</td></tr>
+    <tr><td>Stage 7</td><td>시그널 분류</td><td class="num">1.7초</td><td class="num">0.0%</td><td>5-Layer 시그널</td></tr>
+    <tr><td>Stage 8</td><td>데이터 출력</td><td class="num">1.9초</td><td class="num">0.0%</td><td>최종 Parquet</td></tr>
+    <tr style="font-weight:700; background:#f8fafc;"><td colspan="2">합계</td><td class="num">7,068초 (1.96시간)</td><td class="num">100%</td><td>피크 메모리 19.43GB</td></tr>
+  </table>
+
+  <div class="callout callout-warning">
+    <strong>발견 PL-1:</strong> Stage 3 타임아웃이 3,600초(1시간)인데, 실제 소요 시간이 5,851초(1.6시간)이다. 현재는 타임아웃을 초과하여 실행되고 있으나, 기사량 증가 시 타임아웃 실패 위험이 높다. <strong>7,200초(2시간)로 상향 권고.</strong>
+  </div>
+
+  <h3>7.3 메모리 및 리소스</h3>
+  <table>
+    <tr><th>리소스</th><th>한도</th><th>실측</th><th>여유율</th></tr>
+    <tr><td>메모�� (하드리밋)</td><td class="num">100 GB</td><td class="num">19.43 GB</td><td class="num">80.6%</td></tr>
+    <tr><td>디스크</td><td class="num">2 GB (최소)</td><td class="num">165 GB (가용)</td><td class="num">99%+</td></tr>
+    <tr><td>동시 크롤링 그룹</td><td class="num">6</td><td class="num">6</td><td>-</td></tr>
+  </table>
+
+  <h3>7.4 중복 제거 데이터베이스</h3>
+  <table>
+    <tr><th>테이블</th><th>레코드 수</th><th>용도</th></tr>
+    <tr><td>seen_urls</td><td class="num">31,991</td><td>URL SHA-256 정규화 중복 제거</td></tr>
+    <tr><td>content_hashes</td><td class="num">26,752</td><td>SimHash 64-bit 의미적 중복 제거</td></tr>
+  </table>
+</div>
+
+<!-- ============================================================ -->
+<!-- 8. SECURITY -->
+<!-- ============================================================ -->
+<div class="section" id="security">
+  <h2>8. 보안 및 복원력</h2>
+
+  <h3>8.1 보안 평가</h3>
+  <table>
+    <tr><th>항목</th><th>상태</th><th>비고</th></tr>
+    <tr><td>하드코딩 시크릿</td><td><span class="badge badge-pass">통과</span></td><td>소스 코드에 API 키, 토큰, 비밀번호 없���</td></tr>
+    <tr><td>명령 주입 방지</td><td><span class="badge badge-pass">통과</span></td><td><code>block_destructive_commands.py</code> Hook이 위험 명령 차단</td></tr>
+    <tr><td>시크릿 유출 감지</td><td><span class="badge badge-pass">통과</span></td><td><code>block_secret_leak.py</code>가 Bash 출력에서 패턴 ��지</td></tr>
+    <tr><td>SQL 인젝션</td><td><span class="badge badge-pass">통��</span></td><td>parameterized queries 사용</td></tr>
+    <tr><td>입력 검증</td><td><span class="badge badge-pass">통���</span></td><td>URL 정규화, HTML 새니타이징</td></tr>
+    <tr><td>파일 잠금</td><td><span class="badge badge-pass">통과</span></td><td><code>fcntl.flock()</code> + 원자적 쓰기 (<code>os.replace()</code>)</td></tr>
+  </table>
+
+  <h3>8.2 복원력 체계</h3>
+  <table>
+    <tr><th>메커니즘</th><th>구현</th><th>커버리지</th></tr>
+    <tr><td>서킷 브레이커</td><td>사이트 수준 + URL 수준</td><td>300초 복구 윈도우</td></tr>
+    <tr><td>Never-Abandon</td><td>14개 전략 에스컬레이션</td><td>URL당 최대 90회 시도</td></tr>
+    <tr><td>Lock 관리</td><td>SQLite 기반 자기복구</td><td>동시 실행 방지</td></tr>
+    <tr><td>컨텍스트 보존</td><td>자동 스냅샷 + Knowledge Archive</td><td>세션 경계 보존</td></tr>
+  </table>
+</div>
+
+<!-- ============================================================ -->
+<!-- 9. OPERATIONAL READINESS -->
+<!-- ============================================================ -->
+<div class="section" id="operational">
+  <h2>9. 운영 준비도</h2>
+
+  <h3>9.1 운영 체크리스트</h3>
+  <table>
+    <tr><th>항목</th><th>상태</th><th>비고</th></tr>
+    <tr><td>크롤링 파이프라인</td><td><span class="badge badge-pass">Ready</span></td><td>116개 사이트 설정, 안티블록 구현</td></tr>
+    <tr><td>분석 파이프���인</td><td><span class="badge badge-pass">Ready</span></td><td>8단계 완전 구현, 모델 다운로드 완료</td></tr>
+    <tr><td>가상 환경</td><td><span class="badge badge-pass">Ready</span></td><td>Python 3.13.12, 44개 패키지</td></tr>
+    <tr><td>Preflight 체크</td><td><span class="badge badge-pass">Ready</span></td><td>모든 체크 통과 (venv 환경)</td></tr>
+    <tr><td>대시��드</td><td><span class="badge badge-pass">Ready</span></td><td>Streamlit 앱 존재</td></tr>
+    <tr><td>자동화 스크립트</td><td><span class="badge badge-pass">Ready</span></td><td><code>run_daily.sh</code> (392줄) 구현 ���료</td></tr>
+    <tr><td><strong>Cron 스케줄링</strong></td><td><span class="badge badge-critical">미설정</span></td><td><strong>수동 실행만 가능 — 즉시 조치 필요</strong></td></tr>
+    <tr><td><strong>모니터링/알림</strong></td><td><span class="badge badge-high">미구현</span></td><td>에러 로그는 있으나 알림 시스템 없음</td></tr>
+    <tr><td>Python 3.14 호환</td><td><span class="badge badge-critical">비호환</span></td><td>시스템 Python 3.14 — venv 3.13 강제 필요</td></tr>
+    <tr><td>자��� 복구</td><td><span class="badge badge-medium">기본</span></td><td>Lock 기반, 타임아웃 시 자동 재시작 없음</td></tr>
+  </table>
+
+  <h3>9.2 의존성 현황</h3>
+  <table>
+    <tr><th>카테고리</th><th>상태</th><th>주요 패키지</th></tr>
+    <tr><td>크롤링</td><td><span class="badge badge-pass">OK</span></td><td>requests, aiohttp, beautifulsoup4, lxml, feedparser, trafilatura, playwright</td></tr>
+    <tr><td>한국어 NLP</td><td><span class="badge badge-pass">OK</span></td><td>kiwipiepy 0.17.0</td></tr>
+    <tr><td>영어 NLP</td><td><span class="badge badge-pass">OK</span></td><td>spaCy 3.8.11 + en_core_web_sm</td></tr>
+    <tr><td>임베딩</td><td><span class="badge badge-pass">OK</span></td><td>sentence-transformers (paraphrase-multilingual-MiniLM-L12-v2)</td></tr>
+    <tr><td>분류</td><td><span class="badge badge-pass">OK</span></td><td>transformers, torch (MPS enabled)</td></tr>
+    <tr><td>시계열</td><td><span class="badge badge-pass">OK</span></td><td>statsmodels, prophet, ruptures</td></tr>
+    <tr><td>저장소</td><td><span class="badge badge-pass">OK</span></td><td>pyarrow, duckdb, sqlite-vec</td></tr>
+  </table>
+</div>
+
+<!-- ============================================================ -->
+<!-- 10. FINDINGS REGISTER -->
+<!-- ============================================================ -->
+<div class="section" id="findings">
+  <h2>10. 발견사항 종합 (Findings Register)</h2>
+
+  <h3>10.1 Critical (즉시 조치 필요)</h3>
+  <table>
+    <tr><th>ID</th><th>발견</th><th>영향</th><th>권고</th></tr>
+    <tr>
+      <td>F-01</td>
+      <td><span class="badge badge-critical">Critical</span> Cron 스케줄링 미설정</td>
+      <td>자동화 실행 불가 — 매일 수동 실행 필요</td>
+      <td><code>crontab -e</code>로 <code>0 2 * * *</code> 항목 추가. venv Python 경로 명시.</td>
+    </tr>
+    <tr>
+      <td>F-02</td>
+      <td><span class="badge badge-critical">Critical</span> Python 3.14 시스템 호환성</td>
+      <td>시스템 Python으로 실행 시 spaCy pydantic v1 충돌로 파이프라인 실패</td>
+      <td>모든 스크립트·cron에서 <code>.venv/bin/python</code> 강제. Docker 컨테이너화 검토.</td>
+    </tr>
+  </table>
+
+  <h3>10.2 High (1-2주 내 조치)</h3>
+  <table>
+    <tr><th>ID</th><th>발견</th><th>영향</th><th>권고</th></tr>
+    <tr>
+      <td>F-03</td>
+      <td><span class="badge badge-high">High</span> 20개 사이트 완전 미수집</td>
+      <td>일일 1,655건 기사 손실 (설계의 13.1%)</td>
+      <td>상위 5개(yahoo_finance, bild, yomiuri, abcnews, investing_com)에 전용 어댑터 구현</td>
+    </tr>
+    <tr>
+      <td>F-04</td>
+      <td><span class="badge badge-high">High</span> Generic 어댑터 9개 사이트 전부 실패</td>
+      <td>Generic 전략의 실효성 의문 — 850건/일 손실</td>
+      <td>Generic 어댑터 재설계 또는 해당 사이트 전용 어댑터 구현</td>
+    </tr>
+    <tr>
+      <td>F-05</td>
+      <td><span class="badge badge-high">High</span> 실현율 42.4% (설계 12,637 vs 실측 5,359)</td>
+      <td>daily_article_estimate 산정이 과대하거나, 수집 전략 미흡</td>
+      <td>실측 기반으로 estimate 재보정 + 미수집 사이트 원인별 대응</td>
+    </tr>
+    <tr>
+      <td>F-06</td>
+      <td><span class="badge badge-high">High</span> <code>_context_lib.py</code> 7,542줄 모놀리스</td>
+      <td>유지보수 부담, 단일 장애점</td>
+      <td>3-4개 모듈로 분할 (_pacs_lib, _sot_lib, _team_lib)</td>
+    </tr>
+    <tr>
+      <td>F-07</td>
+      <td><span class="badge badge-medium">Medium</span> 324줄 단일 함수 (<code>_crawl_urls</code>) [감사 교정]</td>
+      <td>가독성·테스트 가능성 개선 여지</td>
+      <td>장기 리팩토링 검토</td>
+    </tr>
+  </table>
+
+  <h3>10.3 Medium (1개월 내 조���)</h3>
+  <table>
+    <tr><th>ID</th><th>발견</th><th>영향</th><th>권고</th></tr>
+    <tr>
+      <td>F-08</td>
+      <td><span class="badge badge-medium">Medium</span> Stage 3 ���임아웃 부족</td>
+      <td>기사 10K+ 시 분석 실패 위험</td>
+      <td>3,600초 → 7,200초 상향</td>
+    </tr>
+    <tr>
+      <td>F-09</td>
+      <td><span class="badge badge-medium">Medium</span> 디듭 DB TTL 미설정</td>
+      <td>31,991 URL 누적 — false positive 증가 위��</td>
+      <td>90일 TTL 퍼지 구현</td>
+    </tr>
+    <tr>
+      <td>F-10</td>
+      <td><span class="badge badge-medium">Medium</span> D-7 상수 52개 중복점</td>
+      <td>변경 시 동기화 누락 위험</td>
+      <td>중앙 constants.py로 통합 검토 (P1 트레이드오프 고려)</td></tr>
+    <tr>
+      <td>F-11</td>
+      <td><span class="badge badge-medium">Medium</span> RSS 피드 변동성 (13개 dead feed)</td>
+      <td>~15-20% 기사 수율 감소</td>
+      <td>DOM fallback 강화 + 주간 피드 건강 모니터링</td>
+    </tr>
+    <tr>
+      <td>F-12</td>
+      <td><span class="badge badge-medium">Medium</span> 모니터링/알림 미구현</td>
+      <td>실패 시 인지 지연</td>
+      <td>실패 사이트 5개 초과, 타임아웃, 메모리 50GB+ 알림 설정</td>
+    </tr>
+    <tr>
+      <td>F-13</td>
+      <td><span class="badge badge-info">Info</span> crawling/pipeline.py 타입 힌트 100% [감사 교정 — 수정 불필요]</td>
+      <td>핵심 모듈의 타입 안전성 미흡</td>
+      <td>반환 타입 추가 + mypy CI 체���</td>
+    </tr>
+    <tr>
+      <td>F-14</td>
+      <td><span class="badge badge-medium">Medium</span> Never-Abandon 14전략 미테스트</td>
+      <td>fallback 에스컬레이션 검증 부재</td>
+      <td>통합 테스트 추가</td>
+    </tr>
+  </table>
+
+  <h3>10.4 Low / Informational</h3>
+  <table>
+    <tr><th>ID</th><th>발��</th><th>비고</th></tr>
+    <tr><td>F-15</td><td><span class="badge badge-low">Low</span> CLAUDE.md 문서 드리프트</td><td>에이전트 수(35→36), Hook 수(21→23) 불일치</td></tr>
+    <tr><td>F-16</td><td><span class="badge badge-low">Low</span> 36개 에이전트 규모</td><td>높으나 정당화됨 — 중복 없음</td></tr>
+    <tr><td>F-17</td><td><span class="badge badge-info">Info</span> 원자적 파일 쓰기</td><td>우��� 패턴 — 데이터 손상 방지</td></tr>
+    <tr><td>F-18</td><td><span class="badge badge-info">Info</span> 4계층 품질 게이트 강제</td><td>코드 수준 강제 — 업계 모범 사례 초과</td></tr>
+    <tr><td>F-19</td><td><span class="badge badge-info">Info</span> 듀얼 레이어 디듭</td><td>URL + SimHash 이중 보호</td></tr>
+    <tr><td>F-20</td><td><span class="badge badge-info">Info</span> 결정론적 Hook 검증</td><td>P1 할루시네이션 방지 — 혁신적 접근</td></tr>
+    <tr><td>F-21</td><td><span class="badge badge-info">Info</span> Knowledge Archive</td><td>세션 간 학습 누적 — 예측적 디버깅 지���</td></tr>
+  </table>
+</div>
+
+<!-- ============================================================ -->
+<!-- 11. RECOMMENDATIONS -->
+<!-- ============================================================ -->
+<div class="section" id="recommendations">
+  <h2>11. 권고사항</h2>
+
+  <h3>11.1 즉시 조치 (24시간 이내)</h3>
+  <ol>
+    <li><strong>Cron 설정</strong> — <code>0 2 * * * .venv/bin/python scripts/run_daily.sh</code></li>
+    <li><strong>Python 경로 강제</strong> — 모든 자동화 스크립트에서 <code>.venv/bin/python</code> 사용</li>
+    <li><strong>Stage 3 타임아웃</strong> — <code>constants.py</code>에서 3,600 → 7,200 상향</li>
+    <li><strong>Dry-run 검증</strong> — <code>.venv/bin/python main.py --mode full --dry-run</code> 실행</li>
+  </ol>
+
+  <h3>11.2 단기 (1-2주)</h3>
+  <ol>
+    <li><strong>상위 5개 미수집 사이트 전용 어댑터 구현</strong>
+      <ul>
+        <li>yahoo_finance (250건/일) — JS 렌더링 + RSS 병행</li>
+        <li>bild (200건/일) — 독일어 페이월 우회 전략</li>
+        <li>yomiuri (200건/일) — 일본어 문자셋 수정</li>
+        <li>abcnews (150건/일) — 전용 RSS 파서</li>
+        <li>investing_com (150건/일) — 동적 콘텐츠 추출</li>
+      </ul>
+    </li>
+    <li><strong>daily_article_estimate 실측 기반 재보정</strong></li>
+    <li><strong>디듭 DB 90일 TTL 퍼지 구현</strong></li>
+  </ol>
+
+  <h3>11.3 중기 (1개월)</h3>
+  <ol>
+    <li><strong>_context_lib.py 모듈 분할</strong> (7,542줄 → 3-4개 모듈)</li>
+    <li><strong>모니터링 대시보드</strong> — 실패 사이트, 타임아웃, 메모리 알림</li>
+    <li><strong>Docker 컨테이너화</strong> — Python 3.13 고정, 환경 드리프트 방지</li>
+    <li><strong>주간 RSS 피드 건강 검진</strong> 자동화</li>
+    <li><strong>Never-Abandon 통합 테스트</strong> 추가</li>
+  </ol>
+
+  <h3>11.4 권고하지 않는 사항</h3>
+  <ul>
+    <li>D-7 상수 중복 제거를 <strong>급하게 진행하지 말 것</strong> — P1 할루시네이션 방지 목적이 있으며, 현재 setup_maintenance.py가 동기화를 검증 중</li>
+    <li>Hook 시스템을 단일 스크립트로 <strong>평탄화하지 말 것</strong> — 현재 구조가 관심사 분리를 올바르게 구현</li>
+    <li>36개 에이전트를 <strong>줄이지 말 것</strong> — 도메인 복잡도에 비례하며 중복이 없음</li>
+  </ul>
+</div>
+
+<!-- ============================================================ -->
+<!-- FOOTER -->
+<!-- ============================================================ -->
+<div class="section" style="text-align:center; padding:20px; background:#f8fafc;">
+  <p style="font-size:12px; color: var(--muted); margin:0;">
+    본 감사보고서는 4개 전문 감사 에이전트의 독립적 병렬 조사와 교차 검증을 기반으로 작성되었습니다.<br>
+    감사 대상: GlobalNews Crawling &amp; Analysis System v1.0 | 감사 일자: 2026-04-04<br>
+    소스 코드 171개 파일(50,807 LOC) + Hook 23개(13,490 LOC) + 테스트 59개(26,627 LOC) = 총 90,924 LOC 감사 수행<br>
+    <strong>Generated by Claude Opus 4.6 — 4-Agent Parallel Audit</strong>
+  </p>
+</div>
+
+</div>
+</body>
+</html>

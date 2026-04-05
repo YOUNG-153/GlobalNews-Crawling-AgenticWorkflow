@@ -107,9 +107,9 @@ GlobalNews-Crawling-AgenticWorkflow/
 ├── soul.md / DECISION-LOG.md / COPYRIGHT.md
 ├── .claude/
 │   ├── settings.json                      ← Hook 설정
-│   ├── agents/                            ← Sub-agent 정의 (코어 3 + 도메인 32)
+│   ├── agents/                            ← Sub-agent 정의 (코어 3 + 도메인 33)
 │   ├── commands/                           ← Slash Commands (7개: install, maintenance, start, review-*, run)
-│   ├── hooks/scripts/                     ← Hook 스크립트 (21개: context_guard, _context_lib(~7,500줄), save/restore/update, generate, validate_*, setup_*, block_*, predictive_debug_guard)
+│   ├── hooks/scripts/                     ← Hook 스크립트 (23개: context_guard, _context_lib(~7,500줄), save/restore/update, generate, validate_*, setup_*, block_*, predictive_debug_guard)
 │   ├── context-snapshots/                 ← 런타임 스냅샷 (latest.md, knowledge-index.jsonl, risk-scores.json)
 │   └── skills/                            ← 스킬 (workflow-generator, skill-creator, subagent-creator, insight-report, doctoral-writing)
 ├── scripts/                               ← 오케스트레이션 스크립트 (sot_manager, workflow_starter, run_quality_gates, validate_*, extract_*, 전처리)

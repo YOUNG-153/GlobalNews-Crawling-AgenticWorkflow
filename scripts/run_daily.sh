@@ -11,6 +11,10 @@
 #   scripts/run_daily.sh --dry-run    # Validate without execution
 #   scripts/run_daily.sh --date 2026-02-25  # Specific date
 #
+# CRON SETUP (add via: crontab -e):
+#   0 2 * * * cd /path/to/project && .venv/bin/python scripts/run_daily.sh >> data/logs/cron.log 2>&1
+#   Ensure .venv/bin/python points to Python 3.12-3.13 (NOT system 3.14+)
+#
 # Exit codes:
 #   0 -- Pipeline completed successfully
 #   1 -- Pipeline failed (see error logs)
@@ -48,6 +52,9 @@ ALERT_DIR="${LOG_DIR}/alerts"
 
 # Lock name
 LOCK_NAME="daily"
+
+# Python interpreter — overridden by activate_venv() when .venv is found
+PYTHON="${PYTHON:-python3}"
 
 # =============================================================================
 # Argument Parsing
@@ -138,13 +145,14 @@ activate_venv() {
             log_info "Activating virtualenv: ${venv_path}"
             # shellcheck disable=SC1091
             source "${venv_path}/bin/activate"
+            PYTHON="${venv_path}/bin/python"
             return 0
         fi
     done
 
     # No venv found -- check if system Python has required packages
-    if python3 -c "import yaml; import requests" 2>/dev/null; then
-        log_warn "No virtualenv found. Using system Python: $(which python3)"
+    if "${PYTHON}" -c "import yaml; import requests" 2>/dev/null; then
+        log_warn "No virtualenv found. Using system Python: $(which "${PYTHON}")"
         return 0
     fi
 
@@ -161,11 +169,11 @@ activate_venv() {
 acquire_lock() {
     log_info "Acquiring lock: ${LOCK_NAME}"
     local result
-    result=$(python3 -m src.utils.self_recovery \
+    result=$("${PYTHON}" -m src.utils.self_recovery \
         --project-dir "${PROJECT_DIR}" \
         --acquire-lock "${LOCK_NAME}" 2>/dev/null) || true
 
-    if echo "${result}" | python3 -c "import sys,json; d=json.load(sys.stdin); sys.exit(0 if d.get('acquired') else 1)" 2>/dev/null; then
+    if echo "${result}" | "${PYTHON}" -c "import sys,json; d=json.load(sys.stdin); sys.exit(0 if d.get('acquired') else 1)" 2>/dev/null; then
         log_info "Lock acquired successfully"
         return 0
     else
@@ -176,7 +184,7 @@ acquire_lock() {
 
 release_lock() {
     log_info "Releasing lock: ${LOCK_NAME}"
-    python3 -m src.utils.self_recovery \
+    "${PYTHON}" -m src.utils.self_recovery \
         --project-dir "${PROJECT_DIR}" \
         --force-release-lock "${LOCK_NAME}" 2>/dev/null || true
 }
@@ -188,7 +196,7 @@ release_lock() {
 run_health_check() {
     log_info "Running pre-run health checks..."
     local result
-    result=$(python3 -m src.utils.self_recovery \
+    result=$("${PYTHON}" -m src.utils.self_recovery \
         --project-dir "${PROJECT_DIR}" \
         --health-check 2>/dev/null)
     local rc=$?
@@ -201,7 +209,7 @@ run_health_check() {
 
     # Log disk space
     local disk_free
-    disk_free=$(echo "${result}" | python3 -c "import sys,json; print(json.load(sys.stdin).get('disk_free_gb', '?'))" 2>/dev/null || echo "?")
+    disk_free=$(echo "${result}" | "${PYTHON}" -c "import sys,json; print(json.load(sys.stdin).get('disk_free_gb', '?'))" 2>/dev/null || echo "?")
     log_info "Health check passed. Disk free: ${disk_free} GB"
     return 0
 }
@@ -235,7 +243,7 @@ rotate_logs() {
     fi
 
     # Also run the Python cleanup for data logs
-    python3 -m src.utils.self_recovery \
+    "${PYTHON}" -m src.utils.self_recovery \
         --project-dir "${PROJECT_DIR}" \
         --cleanup 2>/dev/null || true
 }
@@ -264,7 +272,7 @@ run_pipeline() {
         log_info "DRY RUN mode enabled"
     fi
 
-    log_info "Starting pipeline: python3 main.py ${mode_args[*]}"
+    log_info "Starting pipeline: ${PYTHON} main.py ${mode_args[*]}"
     log_info "Target date: ${TARGET_DATE}"
     log_info "Project dir: ${PROJECT_DIR}"
     log_info "PID: $$"
@@ -276,15 +284,15 @@ run_pipeline() {
     local pipeline_exit_code=0
     if command -v timeout >/dev/null 2>&1; then
         # GNU timeout (Linux)
-        timeout "${PIPELINE_TIMEOUT}" python3 "${PROJECT_DIR}/main.py" "${mode_args[@]}" \
+        timeout "${PIPELINE_TIMEOUT}" "${PYTHON}" "${PROJECT_DIR}/main.py" "${mode_args[@]}" \
             >> "${DAILY_LOG}" 2>&1 || pipeline_exit_code=$?
     elif command -v gtimeout >/dev/null 2>&1; then
         # GNU timeout via coreutils (macOS with brew install coreutils)
-        gtimeout "${PIPELINE_TIMEOUT}" python3 "${PROJECT_DIR}/main.py" "${mode_args[@]}" \
+        gtimeout "${PIPELINE_TIMEOUT}" "${PYTHON}" "${PROJECT_DIR}/main.py" "${mode_args[@]}" \
             >> "${DAILY_LOG}" 2>&1 || pipeline_exit_code=$?
     else
         # Fallback: background process with manual timeout check
-        python3 "${PROJECT_DIR}/main.py" "${mode_args[@]}" \
+        "${PYTHON}" "${PROJECT_DIR}/main.py" "${mode_args[@]}" \
             >> "${DAILY_LOG}" 2>&1 &
         local bg_pid=$!
 

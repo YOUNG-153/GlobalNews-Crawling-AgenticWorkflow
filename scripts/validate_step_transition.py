@@ -31,6 +31,12 @@ MIN_OUTPUT_SIZE = 100
 # run_quality_gates.py:HUMAN_STEPS, _context_lib.py:HUMAN_STEPS_SET,
 # and prompt/workflow.md "Steps 4, 8, 18"
 HUMAN_STEPS = frozenset({4, 8, 18})
+# D-7 intentional duplication — must match run_quality_gates.py:REVIEW_STEPS
+REVIEW_STEPS = frozenset({1, 3, 5, 7, 16})
+# D-7 intentional duplication — must match run_quality_gates.py:TEAM_STEPS
+TEAM_STEPS = frozenset({2, 6, 10, 11, 13, 14})
+# D-7 intentional duplication — must match run_quality_gates.py:TRANSLATION_STEPS
+TRANSLATION_STEPS = frozenset({1, 3, 5, 7, 16, 19})
 
 
 def _find_sot(project_dir):

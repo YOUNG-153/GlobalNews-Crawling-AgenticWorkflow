@@ -904,6 +904,77 @@ class DedupEngine:
         }
 
     # ------------------------------------------------------------------
+    # TTL Purge
+    # ------------------------------------------------------------------
+
+    def purge_expired(self, ttl_days: int = 90) -> dict[str, int]:
+        """Remove entries older than *ttl_days* from both tables.
+
+        Batched DELETE (1 000 rows/batch) to limit WAL growth.
+        Thread-safe — acquires ``self._lock`` for the entire operation.
+
+        Args:
+            ttl_days: Entries with ``first_seen`` / ``seen_at`` older than
+                this many days ago are deleted.  Minimum 7 to prevent
+                accidental full purge.
+
+        Returns:
+            ``{"urls_purged": int, "hashes_purged": int}``
+
+        Raises:
+            ValueError: If *ttl_days* < 7 (safety guard).
+        """
+        if ttl_days < 7:
+            raise ValueError(
+                f"TTL too short ({ttl_days} days). "
+                "Minimum is 7 to prevent accidental full purge."
+            )
+
+        from datetime import datetime, timedelta, timezone
+
+        cutoff = (
+            datetime.now(timezone.utc) - timedelta(days=ttl_days)
+        ).isoformat()
+
+        url_total = 0
+        hash_total = 0
+        batch_size = 1000
+
+        with self._lock:
+            # Batch-delete seen_urls
+            while True:
+                cursor = self._conn.execute(
+                    "DELETE FROM seen_urls WHERE rowid IN "
+                    "(SELECT rowid FROM seen_urls WHERE first_seen < ? LIMIT ?)",
+                    (cutoff, batch_size),
+                )
+                url_total += cursor.rowcount
+                if cursor.rowcount < batch_size:
+                    break
+
+            # Batch-delete content_hashes
+            while True:
+                cursor = self._conn.execute(
+                    "DELETE FROM content_hashes WHERE rowid IN "
+                    "(SELECT rowid FROM content_hashes WHERE seen_at < ? LIMIT ?)",
+                    (cutoff, batch_size),
+                )
+                hash_total += cursor.rowcount
+                if cursor.rowcount < batch_size:
+                    break
+
+            self._conn.commit()
+
+        if url_total > 0 or hash_total > 0:
+            logger.info(
+                "dedup_purge_expired",
+                ttl_days=ttl_days,
+                urls_purged=url_total,
+                hashes_purged=hash_total,
+            )
+        return {"urls_purged": url_total, "hashes_purged": hash_total}
+
+    # ------------------------------------------------------------------
     # Cleanup
     # ------------------------------------------------------------------
 

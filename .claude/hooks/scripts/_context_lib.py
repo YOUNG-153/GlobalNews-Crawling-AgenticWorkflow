@@ -151,7 +151,13 @@ _RISK_WEIGHTS = {
     "connection": 0.3,       # Network — may not be code issue
     "memory": 0.3,
     "command_not_found": 0.3,
-    "unknown": 0.7,          # ~30% of errors — ignoring loses significant data
+    # E-2: New types added to ERROR_TAXONOMY (~line 3357)
+    "exit_code": 0.8,         # Non-zero exit — generic but actionable
+    "assertion": 1.2,         # Logic failure — indicates code issue
+    "runtime_error": 1.0,     # Broad runtime failures
+    "os_error": 0.5,          # OS-level — often environmental
+    "encoding": 0.8,          # Charset issues — common in multilingual crawling
+    "unknown": 0.7,           # Target: ~30% of errors (reduced from ~47%)
 }
 # Recency decay: (max_days, weight_multiplier)
 # More recent errors are more relevant to current code state
@@ -3354,6 +3360,12 @@ def _classify_error_patterns(entries):
         ("memory", re.compile(r"MemoryError|out of memory|heap (?:space|memory|allocation|overflow)|ENOMEM|allocation failed", re.I)),
         ("git_error", re.compile(r"fatal:.*git|merge conflict|CONFLICT|not a git repository", re.I | re.DOTALL)),
         ("command_not_found", re.compile(r"command not found|not recognized|is not recognized", re.I)),
+        # E-2: Additional patterns to reduce "unknown" from ~47% to ~30%
+        ("exit_code", re.compile(r"Exit code [1-9]|exit status [1-9]|returned non-zero|exited with code", re.I)),
+        ("assertion", re.compile(r"AssertionError|assert\s+\w+|assertion failed", re.I)),
+        ("runtime_error", re.compile(r"RuntimeError|runtime error|RecursionError|StopIteration|GeneratorExit", re.I)),
+        ("os_error", re.compile(r"OSError|IOError|BlockingIOError|ChildProcessError|ProcessLookupError|IsADirectoryError", re.I)),
+        ("encoding", re.compile(r"UnicodeDecodeError|UnicodeEncodeError|codec can.t|invalid.*encoding|charmap", re.I)),
     ]
 
     # Read-only tools: is_error=True often indicates non-failure states (file too

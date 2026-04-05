@@ -39,7 +39,7 @@ sources:
       charset: utf-8
     meta:
       difficulty_tier: Medium
-      daily_article_estimate: 200
+      daily_article_estimate: 87
       sections_count: 15
       enabled: true
   joongang:
@@ -81,7 +81,7 @@ sources:
       charset: utf-8
     meta:
       difficulty_tier: Hard
-      daily_article_estimate: 180
+      daily_article_estimate: 61
       sections_count: 12
       enabled: true
   donga:
@@ -115,7 +115,7 @@ sources:
       charset: utf-8
     meta:
       difficulty_tier: Medium
-      daily_article_estimate: 200
+      daily_article_estimate: 26
       sections_count: 14
       enabled: true
   hani:
@@ -149,7 +149,7 @@ sources:
       charset: utf-8
     meta:
       difficulty_tier: Medium
-      daily_article_estimate: 120
+      daily_article_estimate: 53
       sections_count: 10
       enabled: true
   yna:
@@ -183,7 +183,7 @@ sources:
       charset: utf-8
     meta:
       difficulty_tier: Medium
-      daily_article_estimate: 500
+      daily_article_estimate: 100
       sections_count: 20
       enabled: true
   mk:
@@ -218,7 +218,7 @@ sources:
       charset: utf-8
     meta:
       difficulty_tier: Medium
-      daily_article_estimate: 300
+      daily_article_estimate: 7
       sections_count: 12
       enabled: true
   hankyung:
@@ -252,7 +252,7 @@ sources:
       charset: utf-8
     meta:
       difficulty_tier: Medium
-      daily_article_estimate: 250
+      daily_article_estimate: 33
       sections_count: 10
       enabled: true
   mt:
@@ -286,7 +286,7 @@ sources:
       charset: utf-8
     meta:
       difficulty_tier: Medium
-      daily_article_estimate: 200
+      daily_article_estimate: 297
       sections_count: 10
       enabled: true
   nocutnews:
@@ -320,7 +320,7 @@ sources:
       charset: utf-8
     meta:
       difficulty_tier: Easy
-      daily_article_estimate: 100
+      daily_article_estimate: 18
       sections_count: 8
       enabled: true
   kmib:
@@ -354,7 +354,7 @@ sources:
       charset: utf-8
     meta:
       difficulty_tier: Medium
-      daily_article_estimate: 120
+      daily_article_estimate: 8
       sections_count: 10
       enabled: true
   38north:
@@ -421,7 +421,7 @@ sources:
       charset: utf-8
     meta:
       difficulty_tier: Hard
-      daily_article_estimate: 20
+      daily_article_estimate: 16
       sections_count: 6
       enabled: true
   etnews:
@@ -455,7 +455,7 @@ sources:
       charset: utf-8
     meta:
       difficulty_tier: Medium
-      daily_article_estimate: 100
+      daily_article_estimate: 5
       sections_count: 10
       enabled: true
   huffpost:
@@ -493,7 +493,7 @@ sources:
       charset: utf-8
     meta:
       difficulty_tier: Medium
-      daily_article_estimate: 100
+      daily_article_estimate: 39
       sections_count: 15
       enabled: true
   nytimes:
@@ -534,7 +534,7 @@ sources:
       charset: utf-8
     meta:
       difficulty_tier: Extreme
-      daily_article_estimate: 300
+      daily_article_estimate: 5
       sections_count: 20
       enabled: true
   latimes:
@@ -579,7 +579,7 @@ sources:
       charset: utf-8
     meta:
       difficulty_tier: Medium
-      daily_article_estimate: 150
+      daily_article_estimate: 5
       sections_count: 15
       enabled: true
   buzzfeed:
@@ -616,7 +616,7 @@ sources:
       charset: utf-8
     meta:
       difficulty_tier: Hard
-      daily_article_estimate: 50
+      daily_article_estimate: 5
       sections_count: 10
       enabled: true
   globaltimes:
@@ -650,7 +650,7 @@ sources:
       charset: utf-8
     meta:
       difficulty_tier: Easy
-      daily_article_estimate: 40
+      daily_article_estimate: 5
       sections_count: 4
       enabled: true
   scmp:
@@ -684,7 +684,7 @@ sources:
       charset: utf-8
     meta:
       difficulty_tier: Medium
-      daily_article_estimate: 150
+      daily_article_estimate: 48
       sections_count: 15
       enabled: true
   taiwannews:
@@ -717,7 +717,7 @@ sources:
       charset: utf-8
     meta:
       difficulty_tier: Easy
-      daily_article_estimate: 30
+      daily_article_estimate: 17
       sections_count: 10
       enabled: true
   yomiuri:
@@ -751,7 +751,7 @@ sources:
       charset: utf-8
     meta:
       difficulty_tier: Hard
-      daily_article_estimate: 200
+      daily_article_estimate: 122
       sections_count: 15
       enabled: true
   thehindu:
@@ -785,7 +785,7 @@ sources:
       charset: utf-8
     meta:
       difficulty_tier: Medium
-      daily_article_estimate: 100
+      daily_article_estimate: 73
       sections_count: 15
       enabled: true
   thesun:
@@ -826,7 +826,7 @@ sources:
       charset: utf-8
     meta:
       difficulty_tier: Hard
-      daily_article_estimate: 300
+      daily_article_estimate: 28
       sections_count: 15
       enabled: true
   bild:
@@ -865,7 +865,7 @@ sources:
       charset: utf-8
     meta:
       difficulty_tier: Hard
-      daily_article_estimate: 200
+      daily_article_estimate: 5
       sections_count: 10
       enabled: true
   themoscowtimes:
@@ -903,7 +903,7 @@ sources:
       charset: utf-8
     meta:
       difficulty_tier: Easy
-      daily_article_estimate: 20
+      daily_article_estimate: 7
       sections_count: 9
       enabled: true
   aljazeera:
@@ -939,7 +939,7 @@ sources:
       charset: utf-8
     meta:
       difficulty_tier: Medium
-      daily_article_estimate: 100
+      daily_article_estimate: 23
       sections_count: 12
       enabled: true
   insight_kr:
@@ -973,7 +973,7 @@ sources:
     meta:
       enabled: true
       difficulty_tier: Easy
-      daily_article_estimate: 30
+      daily_article_estimate: 13
       sections_count: 5
   stratechery:
     name: Stratechery
@@ -1006,7 +1006,7 @@ sources:
     meta:
       enabled: true
       difficulty_tier: Hard
-      daily_article_estimate: 2
+      daily_article_estimate: 5
       sections_count: 5
   wired:
     name: Wired
@@ -1040,7 +1040,7 @@ sources:
     meta:
       enabled: true
       difficulty_tier: Medium
-      daily_article_estimate: 30
+      daily_article_estimate: 5
       sections_count: 5
   techmeme:
     name: Techmeme
@@ -1073,7 +1073,7 @@ sources:
     meta:
       enabled: true
       difficulty_tier: Medium
-      daily_article_estimate: 30
+      daily_article_estimate: 7
       sections_count: 5
   bbc:
     name: BBC News
@@ -1107,7 +1107,7 @@ sources:
     meta:
       enabled: true
       difficulty_tier: Easy
-      daily_article_estimate: 300
+      daily_article_estimate: 9
       sections_count: 5
   theguardian:
     name: The Guardian
@@ -1141,7 +1141,7 @@ sources:
     meta:
       enabled: true
       difficulty_tier: Easy
-      daily_article_estimate: 250
+      daily_article_estimate: 45
       sections_count: 5
   thetimes:
     name: The Times
@@ -1173,7 +1173,7 @@ sources:
     meta:
       enabled: true
       difficulty_tier: Hard
-      daily_article_estimate: 120
+      daily_article_estimate: 5
       sections_count: 5
   politico_eu:
     name: Politico Europe
@@ -1207,7 +1207,7 @@ sources:
     meta:
       enabled: true
       difficulty_tier: Medium
-      daily_article_estimate: 60
+      daily_article_estimate: 5
       sections_count: 5
   natureasia:
     name: Nature Asia
@@ -1241,7 +1241,7 @@ sources:
     meta:
       enabled: true
       difficulty_tier: Easy
-      daily_article_estimate: 10
+      daily_article_estimate: 5
       sections_count: 5
   mainichi:
     name: Mainichi Shimbun
@@ -1275,7 +1275,7 @@ sources:
     meta:
       enabled: true
       difficulty_tier: Medium
-      daily_article_estimate: 120
+      daily_article_estimate: 5
       sections_count: 5
   asahi:
     name: Asahi Shimbun
@@ -1309,7 +1309,7 @@ sources:
     meta:
       enabled: true
       difficulty_tier: Medium
-      daily_article_estimate: 150
+      daily_article_estimate: 27
       sections_count: 5
   yahoo_jp:
     name: Yahoo Japan News
@@ -1342,7 +1342,7 @@ sources:
     meta:
       enabled: true
       difficulty_tier: Medium
-      daily_article_estimate: 300
+      daily_article_estimate: 21
       sections_count: 5
   hindustantimes:
     name: Hindustan Times
@@ -1376,7 +1376,7 @@ sources:
     meta:
       enabled: true
       difficulty_tier: Easy
-      daily_article_estimate: 200
+      daily_article_estimate: 42
       sections_count: 5
   economictimes:
     name: Economic Times India
@@ -1410,7 +1410,7 @@ sources:
     meta:
       enabled: true
       difficulty_tier: Easy
-      daily_article_estimate: 150
+      daily_article_estimate: 27
       sections_count: 5
   philstar:
     name: PhilStar
@@ -1450,7 +1450,7 @@ sources:
     meta:
       enabled: true
       difficulty_tier: Medium
-      daily_article_estimate: 80
+      daily_article_estimate: 5
       sections_count: 5
   jakartapost:
     name: The Jakarta Post
@@ -1484,7 +1484,7 @@ sources:
     meta:
       enabled: true
       difficulty_tier: Medium
-      daily_article_estimate: 60
+      daily_article_estimate: 5
       sections_count: 5
   antaranews:
     name: Antara News
@@ -1518,7 +1518,7 @@ sources:
     meta:
       enabled: true
       difficulty_tier: Medium
-      daily_article_estimate: 80
+      daily_article_estimate: 14
       sections_count: 5
   tempo_id:
     name: Tempo Indonesia
@@ -1553,7 +1553,7 @@ sources:
     meta:
       enabled: true
       difficulty_tier: Medium
-      daily_article_estimate: 100
+      daily_article_estimate: 8
       sections_count: 5
   focustaiwan:
     name: Focus Taiwan
@@ -1587,7 +1587,7 @@ sources:
     meta:
       enabled: true
       difficulty_tier: Medium
-      daily_article_estimate: 30
+      daily_article_estimate: 9
       sections_count: 5
   taipeitimes:
     name: Taipei Times
@@ -1621,7 +1621,7 @@ sources:
     meta:
       enabled: true
       difficulty_tier: Medium
-      daily_article_estimate: 40
+      daily_article_estimate: 25
       sections_count: 5
   vnexpress:
     name: VnExpress International
@@ -1656,7 +1656,7 @@ sources:
     meta:
       enabled: true
       difficulty_tier: Medium
-      daily_article_estimate: 200
+      daily_article_estimate: 17
       sections_count: 5
   vietnamnews:
     name: Vietnam News
@@ -1690,7 +1690,7 @@ sources:
     meta:
       enabled: true
       difficulty_tier: Medium
-      daily_article_estimate: 40
+      daily_article_estimate: 5
       sections_count: 5
   euronews:
     name: Euronews
@@ -1724,7 +1724,7 @@ sources:
     meta:
       enabled: true
       difficulty_tier: Easy
-      daily_article_estimate: 100
+      daily_article_estimate: 5
       sections_count: 5
   spiegel:
     name: Der Spiegel
@@ -1758,7 +1758,7 @@ sources:
     meta:
       enabled: true
       difficulty_tier: Medium
-      daily_article_estimate: 100
+      daily_article_estimate: 32
       sections_count: 5
   sueddeutsche:
     name: Sueddeutsche Zeitung
@@ -1792,7 +1792,7 @@ sources:
     meta:
       enabled: true
       difficulty_tier: Medium
-      daily_article_estimate: 80
+      daily_article_estimate: 5
       sections_count: 5
   faz:
     name: Frankfurter Allgemeine
@@ -1826,7 +1826,7 @@ sources:
     meta:
       enabled: true
       difficulty_tier: Hard
-      daily_article_estimate: 80
+      daily_article_estimate: 5
       sections_count: 5
   repubblica:
     name: La Repubblica
@@ -1860,7 +1860,7 @@ sources:
     meta:
       enabled: true
       difficulty_tier: Medium
-      daily_article_estimate: 120
+      daily_article_estimate: 46
       sections_count: 5
   ansa:
     name: ANSA
@@ -1894,7 +1894,7 @@ sources:
     meta:
       enabled: true
       difficulty_tier: Easy
-      daily_article_estimate: 200
+      daily_article_estimate: 15
       sections_count: 5
   elpais:
     name: El Pais
@@ -1928,7 +1928,7 @@ sources:
     meta:
       enabled: true
       difficulty_tier: Medium
-      daily_article_estimate: 150
+      daily_article_estimate: 34
       sections_count: 5
   elmundo:
     name: El Mundo
@@ -1962,7 +1962,7 @@ sources:
     meta:
       enabled: true
       difficulty_tier: Medium
-      daily_article_estimate: 120
+      daily_article_estimate: 8
       sections_count: 5
   abc_es:
     name: ABC Spain
@@ -1996,7 +1996,7 @@ sources:
     meta:
       enabled: true
       difficulty_tier: Medium
-      daily_article_estimate: 80
+      daily_article_estimate: 11
       sections_count: 5
   lavanguardia:
     name: La Vanguardia
@@ -2030,7 +2030,7 @@ sources:
     meta:
       enabled: true
       difficulty_tier: Medium
-      daily_article_estimate: 100
+      daily_article_estimate: 35
       sections_count: 5
   france24:
     name: France 24
@@ -2064,7 +2064,7 @@ sources:
     meta:
       enabled: true
       difficulty_tier: Easy
-      daily_article_estimate: 80
+      daily_article_estimate: 15
       sections_count: 5
   wyborcza:
     name: Gazeta Wyborcza
@@ -2097,7 +2097,7 @@ sources:
     meta:
       enabled: true
       difficulty_tier: Medium
-      daily_article_estimate: 80
+      daily_article_estimate: 5
       sections_count: 5
   pap:
     name: Polish Press Agency
@@ -2130,7 +2130,7 @@ sources:
     meta:
       enabled: true
       difficulty_tier: Medium
-      daily_article_estimate: 60
+      daily_article_estimate: 5
       sections_count: 5
   idnes:
     name: iDNES
@@ -2164,7 +2164,7 @@ sources:
     meta:
       enabled: true
       difficulty_tier: Medium
-      daily_article_estimate: 80
+      daily_article_estimate: 5
       sections_count: 5
   balkaninsight:
     name: Balkan Insight (BIRN)
@@ -2198,7 +2198,7 @@ sources:
     meta:
       enabled: true
       difficulty_tier: Medium
-      daily_article_estimate: 20
+      daily_article_estimate: 5
       sections_count: 5
   aftonbladet:
     name: Aftonbladet
@@ -2233,7 +2233,7 @@ sources:
     meta:
       enabled: true
       difficulty_tier: Medium
-      daily_article_estimate: 100
+      daily_article_estimate: 45
       sections_count: 5
   tv2_no:
     name: TV2 Norway
@@ -2268,7 +2268,7 @@ sources:
     meta:
       enabled: true
       difficulty_tier: Medium
-      daily_article_estimate: 60
+      daily_article_estimate: 13
       sections_count: 5
   nrk_no:
     name: NRK (Norwegian Broadcasting Corporation)
@@ -2302,7 +2302,7 @@ sources:
     meta:
       enabled: true
       difficulty_tier: Easy
-      daily_article_estimate: 150
+      daily_article_estimate: 5
       sections_count: 10
   yle:
     name: YLE News
@@ -2336,7 +2336,7 @@ sources:
     meta:
       enabled: true
       difficulty_tier: Medium
-      daily_article_estimate: 60
+      daily_article_estimate: 5
       sections_count: 5
   allafrica:
     name: AllAfrica
@@ -2370,7 +2370,7 @@ sources:
     meta:
       enabled: true
       difficulty_tier: Medium
-      daily_article_estimate: 100
+      daily_article_estimate: 5
       sections_count: 5
   africanews:
     name: Africanews
@@ -2404,7 +2404,7 @@ sources:
     meta:
       enabled: true
       difficulty_tier: Medium
-      daily_article_estimate: 60
+      daily_article_estimate: 5
       sections_count: 5
   clarin:
     name: Clarin
@@ -2439,7 +2439,7 @@ sources:
     meta:
       enabled: true
       difficulty_tier: Medium
-      daily_article_estimate: 100
+      daily_article_estimate: 5
       sections_count: 5
   lanacion_ar:
     name: La Nacion Argentina
@@ -2473,7 +2473,7 @@ sources:
     meta:
       enabled: true
       difficulty_tier: Medium
-      daily_article_estimate: 80
+      daily_article_estimate: 34
       sections_count: 5
   folha:
     name: Folha de S.Paulo
@@ -2508,7 +2508,7 @@ sources:
     meta:
       enabled: true
       difficulty_tier: Medium
-      daily_article_estimate: 150
+      daily_article_estimate: 16
       sections_count: 5
   oglobo:
     name: O Globo
@@ -2542,7 +2542,7 @@ sources:
     meta:
       enabled: true
       difficulty_tier: Medium
-      daily_article_estimate: 120
+      daily_article_estimate: 5
       sections_count: 5
   biobiochile:
     name: BioBioChile
@@ -2576,7 +2576,7 @@ sources:
     meta:
       enabled: true
       difficulty_tier: Medium
-      daily_article_estimate: 60
+      daily_article_estimate: 26
       sections_count: 5
   eltiempo:
     name: El Tiempo
@@ -2610,7 +2610,7 @@ sources:
     meta:
       enabled: true
       difficulty_tier: Medium
-      daily_article_estimate: 100
+      daily_article_estimate: 13
       sections_count: 5
   rpp_pe:
     name: RPP Noticias
@@ -2644,7 +2644,7 @@ sources:
     meta:
       enabled: true
       difficulty_tier: Easy
-      daily_article_estimate: 80
+      daily_article_estimate: 5
       sections_count: 8
   gogo_mn:
     name: GoGo Mongolia
@@ -2677,7 +2677,7 @@ sources:
     meta:
       enabled: true
       difficulty_tier: Medium
-      daily_article_estimate: 30
+      daily_article_estimate: 5
       sections_count: 5
   ria:
     name: RIA Novosti
@@ -2711,7 +2711,7 @@ sources:
     meta:
       enabled: true
       difficulty_tier: Medium
-      daily_article_estimate: 300
+      daily_article_estimate: 35
       sections_count: 5
   rg:
     name: Rossiyskaya Gazeta
@@ -2745,7 +2745,7 @@ sources:
     meta:
       enabled: true
       difficulty_tier: Medium
-      daily_article_estimate: 150
+      daily_article_estimate: 16
       sections_count: 5
   middleeasteye:
     name: Middle East Eye
@@ -2779,7 +2779,7 @@ sources:
     meta:
       enabled: true
       difficulty_tier: Medium
-      daily_article_estimate: 40
+      daily_article_estimate: 5
       sections_count: 5
   almonitor:
     name: Al-Monitor
@@ -2813,7 +2813,7 @@ sources:
     meta:
       enabled: true
       difficulty_tier: Medium
-      daily_article_estimate: 30
+      daily_article_estimate: 5
       sections_count: 5
   haaretz:
     name: Haaretz
@@ -2847,7 +2847,7 @@ sources:
     meta:
       enabled: true
       difficulty_tier: Hard
-      daily_article_estimate: 60
+      daily_article_estimate: 7
       sections_count: 5
   jpost:
     name: Jerusalem Post
@@ -2881,7 +2881,7 @@ sources:
     meta:
       enabled: true
       difficulty_tier: Medium
-      daily_article_estimate: 80
+      daily_article_estimate: 12
       sections_count: 5
   jordantimes:
     name: Jordan Times
@@ -2914,7 +2914,7 @@ sources:
     meta:
       enabled: true
       difficulty_tier: Medium
-      daily_article_estimate: 20
+      daily_article_estimate: 5
       sections_count: 5
   france24_fr:
     name: France 24 French
@@ -2956,7 +2956,7 @@ sources:
       charset: utf-8
     meta:
       difficulty_tier: Easy
-      daily_article_estimate: 200
+      daily_article_estimate: 5
       sections_count: 10
       enabled: true
       note: Expanded 2026-03-25 with 4 section feeds (economie, europe, culture, sports)
@@ -2993,7 +2993,7 @@ sources:
       charset: utf-8
     meta:
       difficulty_tier: Medium
-      daily_article_estimate: 50
+      daily_article_estimate: 5
       sections_count: 8
       enabled: true
   nbcnews:
@@ -3027,7 +3027,7 @@ sources:
       charset: utf-8
     meta:
       difficulty_tier: Medium
-      daily_article_estimate: 150
+      daily_article_estimate: 5
       sections_count: 12
       enabled: true
   jordannews:
@@ -3061,7 +3061,7 @@ sources:
       charset: utf-8
     meta:
       difficulty_tier: Easy
-      daily_article_estimate: 30
+      daily_article_estimate: 5
       sections_count: 6
       enabled: true
   ruv_english:
@@ -3095,7 +3095,7 @@ sources:
       charset: utf-8
     meta:
       difficulty_tier: Easy
-      daily_article_estimate: 15
+      daily_article_estimate: 5
       sections_count: 5
       enabled: true
   novinky:
@@ -3129,7 +3129,7 @@ sources:
       charset: utf-8
     meta:
       difficulty_tier: Easy
-      daily_article_estimate: 80
+      daily_article_estimate: 5
       sections_count: 8
       enabled: true
   eluniversal_mx:
@@ -3163,7 +3163,7 @@ sources:
       charset: utf-8
     meta:
       difficulty_tier: Easy
-      daily_article_estimate: 100
+      daily_article_estimate: 5
       sections_count: 10
       enabled: true
   taz:
@@ -3197,7 +3197,7 @@ sources:
       charset: utf-8
     meta:
       difficulty_tier: Easy
-      daily_article_estimate: 80
+      daily_article_estimate: 5
       sections_count: 10
       enabled: true
   ndtv:
@@ -3231,7 +3231,7 @@ sources:
       charset: utf-8
     meta:
       difficulty_tier: Medium
-      daily_article_estimate: 200
+      daily_article_estimate: 5
       sections_count: 15
       enabled: true
   indiatvnews:
@@ -3265,7 +3265,7 @@ sources:
       charset: utf-8
     meta:
       difficulty_tier: Easy
-      daily_article_estimate: 100
+      daily_article_estimate: 5
       sections_count: 10
       enabled: true
   ilfattoquotidiano:
@@ -3299,7 +3299,7 @@ sources:
       charset: utf-8
     meta:
       difficulty_tier: Easy
-      daily_article_estimate: 60
+      daily_article_estimate: 5
       sections_count: 8
       enabled: true
   tass:
@@ -3333,7 +3333,7 @@ sources:
       charset: utf-8
     meta:
       difficulty_tier: Easy
-      daily_article_estimate: 200
+      daily_article_estimate: 5
       sections_count: 12
       enabled: true
   rappler:
@@ -3367,7 +3367,7 @@ sources:
       charset: utf-8
     meta:
       difficulty_tier: Easy
-      daily_article_estimate: 80
+      daily_article_estimate: 5
       sections_count: 10
       enabled: true
   dailymaverick:
@@ -3401,7 +3401,7 @@ sources:
       charset: utf-8
     meta:
       difficulty_tier: Easy
-      daily_article_estimate: 40
+      daily_article_estimate: 5
       sections_count: 8
       enabled: true
   standardmedia:
@@ -3435,7 +3435,7 @@ sources:
       charset: utf-8
     meta:
       difficulty_tier: Easy
-      daily_article_estimate: 50
+      daily_article_estimate: 5
       sections_count: 8
       enabled: true
   latercera:
@@ -3469,7 +3469,7 @@ sources:
       charset: utf-8
     meta:
       difficulty_tier: Easy
-      daily_article_estimate: 80
+      daily_article_estimate: 5
       sections_count: 10
       enabled: true
   koreatimes:
@@ -3503,7 +3503,7 @@ sources:
       charset: utf-8
     meta:
       difficulty_tier: Easy
-      daily_article_estimate: 50
+      daily_article_estimate: 5
       sections_count: 8
       enabled: true
   axios:
@@ -3537,7 +3537,7 @@ sources:
       charset: utf-8
     meta:
       difficulty_tier: Medium
-      daily_article_estimate: 30
+      daily_article_estimate: 5
       sections_count: 8
       enabled: true
   france24_en:
@@ -3571,7 +3571,7 @@ sources:
       charset: utf-8
     meta:
       difficulty_tier: Easy
-      daily_article_estimate: 80
+      daily_article_estimate: 5
       sections_count: 10
       enabled: true
   inquirer_newsinfo:
@@ -3605,7 +3605,7 @@ sources:
       charset: utf-8
     meta:
       difficulty_tier: Easy
-      daily_article_estimate: 60
+      daily_article_estimate: 5
       sections_count: 8
       enabled: true
 
@@ -3634,7 +3634,7 @@ sources:
       bot_block_level: LOW
     meta:
       difficulty_tier: Easy
-      daily_article_estimate: 50
+      daily_article_estimate: 5
       sections_count: 5
       enabled: true
 
@@ -3659,7 +3659,7 @@ sources:
       bot_block_level: LOW
     meta:
       difficulty_tier: Easy
-      daily_article_estimate: 80
+      daily_article_estimate: 5
       sections_count: 6
       enabled: true
 
@@ -3684,7 +3684,7 @@ sources:
       bot_block_level: LOW
     meta:
       difficulty_tier: Easy
-      daily_article_estimate: 30
+      daily_article_estimate: 5
       sections_count: 4
       enabled: true
   yahoo_finance:
@@ -3716,7 +3716,7 @@ sources:
       charset: utf-8
     meta:
       difficulty_tier: Easy
-      daily_article_estimate: 250
+      daily_article_estimate: 5
       sections_count: 8
       enabled: true
       note: Added 2026-03-25 as Bloomberg replacement. RSS verified (50 items, 5min TTL).
@@ -3757,7 +3757,7 @@ sources:
       charset: utf-8
     meta:
       difficulty_tier: Easy
-      daily_article_estimate: 150
+      daily_article_estimate: 5
       sections_count: 10
       enabled: true
       note: Added 2026-03-25 as CNBC replacement. 4 RSS section feeds verified.
@@ -3793,7 +3793,7 @@ sources:
       charset: utf-8
     meta:
       difficulty_tier: Medium
-      daily_article_estimate: 120
+      daily_article_estimate: 5
       sections_count: 5
       enabled: true
       note: Added 2026-03-25 as Bloomberg depth/analysis complement. RSS feeds verified
@@ -3827,7 +3827,7 @@ sources:
       charset: utf-8
     meta:
       difficulty_tier: Easy
-      daily_article_estimate: 80
+      daily_article_estimate: 5
       sections_count: 5
       enabled: true
       note: Added 2026-03-25 as WSJ replacement. US financial/business news.
@@ -3861,7 +3861,7 @@ sources:
       charset: utf-8
     meta:
       difficulty_tier: Easy
-      daily_article_estimate: 100
+      daily_article_estimate: 5
       sections_count: 8
       enabled: true
       note: Added 2026-03-25 as FT replacement. UK financial/business news (London City focus).
@@ -3895,7 +3895,7 @@ sources:
       charset: utf-8
     meta:
       difficulty_tier: Easy
-      daily_article_estimate: 150
+      daily_article_estimate: 5
       sections_count: 10
       enabled: true
       note: Added 2026-03-25 as CNN replacement. US general news (ABC/Disney).
@@ -3929,7 +3929,7 @@ sources:
       charset: utf-8
     meta:
       difficulty_tier: Easy
-      daily_article_estimate: 50
+      daily_article_estimate: 5
       sections_count: 5
       enabled: true
       note: Added 2026-03-25 as iRobot News replacement. Korean tech/IT news (디지털데일리).
@@ -3963,7 +3963,7 @@ sources:
       charset: utf-8
     meta:
       difficulty_tier: Easy
-      daily_article_estimate: 30
+      daily_article_estimate: 5
       sections_count: 5
       enabled: true
       note: Added 2026-03-25 as Euractiv replacement. Brussels-based EU policy news.
@@ -3997,7 +3997,7 @@ sources:
       charset: utf-8
     meta:
       difficulty_tier: Easy
-      daily_article_estimate: 15
+      daily_article_estimate: 5
       sections_count: 5
       enabled: true
       note: Added 2026-03-25 as Iceland Monitor replacement. English-language Icelandic news.

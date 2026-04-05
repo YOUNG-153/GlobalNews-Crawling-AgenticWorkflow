@@ -687,6 +687,67 @@ class TestDedupEngineBatch:
 # Thread safety
 # ---------------------------------------------------------------------------
 
+# ---------------------------------------------------------------------------
+# Purge expired tests
+# ---------------------------------------------------------------------------
+
+class TestDedupEnginePurgeExpired:
+    """Tests for DedupEngine.purge_expired() TTL purge."""
+
+    def test_purge_safety_guard_rejects_short_ttl(self):
+        """TTL < 7 must raise ValueError to prevent accidental full purge."""
+        with _engine() as engine:
+            with pytest.raises(ValueError, match="Minimum is 7"):
+                engine.purge_expired(ttl_days=3)
+
+    def test_purge_empty_db_returns_zero(self):
+        """Purge on fresh DB should return zero counts without error."""
+        with _engine() as engine:
+            result = engine.purge_expired(ttl_days=90)
+            assert result == {"urls_purged": 0, "hashes_purged": 0}
+
+    def test_purge_removes_old_entries(self):
+        """Entries older than TTL are deleted; recent entries are kept."""
+        from datetime import datetime, timedelta, timezone
+
+        with _engine() as engine:
+            # Insert an article (registers in both tables with current timestamp)
+            engine.is_duplicate(
+                url="https://example.com/recent",
+                title="Recent Article Title",
+                body="Recent article body text with enough words for SimHash. " * 5,
+                source_id="test",
+                article_id=_article_id(),
+            )
+            before = engine.stats()
+            assert before["total_urls"] == 1
+
+            # Purge with 90-day TTL — nothing should be deleted (just inserted)
+            result = engine.purge_expired(ttl_days=90)
+            assert result["urls_purged"] == 0
+            assert result["hashes_purged"] == 0
+
+            # Manually backdate the entry to 100 days ago
+            old_ts = (datetime.now(timezone.utc) - timedelta(days=100)).isoformat()
+            engine._conn.execute(
+                "UPDATE seen_urls SET first_seen = ?", (old_ts,)
+            )
+            engine._conn.execute(
+                "UPDATE content_hashes SET seen_at = ?", (old_ts,)
+            )
+            engine._conn.commit()
+
+            # Now purge should remove it
+            result = engine.purge_expired(ttl_days=90)
+            assert result["urls_purged"] == 1
+            assert result["hashes_purged"] >= 1
+
+            after = engine.stats()
+            assert after["total_urls"] == 0
+
+
+# ---------------------------------------------------------------------------
+
 class TestDedupEngineThreadSafety:
     def test_concurrent_is_duplicate_no_exception(self):
         """Multiple threads calling is_duplicate() simultaneously must not raise."""

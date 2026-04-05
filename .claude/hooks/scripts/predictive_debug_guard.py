@@ -43,10 +43,12 @@ RISK_THRESHOLD = 3.0        # Sync: _context_lib.py _RISK_SCORE_THRESHOLD
 MIN_SESSIONS = 5            # Sync: _context_lib.py _RISK_MIN_SESSIONS
 # Cache file path relative to project's .claude/context-snapshots/
 CACHE_FILENAME = "risk-scores.json"
-# Maximum age of cache in seconds (2 hours — beyond this, data is stale)
+# Maximum age of cache in seconds (48 hours — generous window)
 # Trade-off (ADR-036): Cache is generated at SessionStart (clear|compact|resume),
-# NOT at startup. First startup after >2h gap has no cache → silent exit (safe).
-MAX_CACHE_AGE_SECONDS = 7200
+# NOT at startup. Widened from 2h→48h so that previous session's cache remains
+# useful across startup gaps. Risk data changes slowly (KA-level aggregation),
+# so 48h staleness is acceptable for warning purposes.
+MAX_CACHE_AGE_SECONDS = 172800
 
 
 def main():

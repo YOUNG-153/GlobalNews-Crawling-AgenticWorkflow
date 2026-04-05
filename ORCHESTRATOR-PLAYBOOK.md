@@ -90,17 +90,17 @@ Every step (unless stated otherwise) follows this sequence:
 Task agent with: Read prompt/workflow.md Step 1 + previous outputs → produce output
 ```
 
-**(team) step** (e.g., Step 2 research team):
+**(team) step** (e.g., Step 2 tech-validation team):
 ```bash
 # Create team
-TeamCreate --name "research-team" --members "@feasibility-analyst, @legal-analyst"
+TeamCreate --name "tech-validation-team" --members "@dep-validator, @nlp-benchmarker, @memory-profiler"
 
 # Assign tasks via SendMessage
-SendMessage --to "@feasibility-analyst" --message "Read research/site-reconnaissance.md → produce crawling feasibility analysis"
+SendMessage --to "@dep-validator" --message "Validate all Python dependencies and version compatibility"
 
 # Monitor and collect (Team Lead waits for reports)
 # Update SOT after each teammate completes
-python3 scripts/sot_manager.py --update-team '{"name":"research-team","status":"partial","tasks_completed":[],"tasks_pending":["feasibility-analyst","legal-analyst"],"completed_summaries":{}}'
+python3 scripts/sot_manager.py --update-team '{"name":"tech-validation-team","status":"partial","tasks_completed":[],"tasks_pending":["dep-validator","nlp-benchmarker","memory-profiler"],"completed_summaries":{}}'
 ```
 
 ---

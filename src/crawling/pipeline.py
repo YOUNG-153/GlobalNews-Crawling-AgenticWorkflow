@@ -43,6 +43,7 @@ from src.config.constants import (
     CRAWL_LOOKBACK_HOURS,
     CRAWL_NEVER_ABANDON,
     DATA_RAW_DIR,
+    DEDUP_TTL_DAYS,
     MAX_ARTICLES_PER_SITE_PER_DAY,
     DEFAULT_RATE_LIMIT_SECONDS,
     ENABLED_DEFAULT,
@@ -349,6 +350,9 @@ class CrawlingPipeline:
 
         # Deduplication engine (SQLite-backed)
         self._dedup = DedupEngine()
+        # Purge stale entries to prevent false-positive growth
+        # D-7: DEDUP_TTL_DAYS defined in src/config/constants.py
+        self._dedup.purge_expired(ttl_days=DEDUP_TTL_DAYS)
 
         # User-Agent manager
         self._ua_manager = UAManager(sources_config=sources_config)

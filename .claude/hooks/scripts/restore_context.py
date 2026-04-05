@@ -495,6 +495,23 @@ def _build_recovery_output(source, latest_path, summary, sot_warning, snapshot_a
         if os.path.isdir(sessions_dir):
             output_lines.append(f"■ 세션 아카이브: {sessions_dir}")
 
+    # Opp-1: High-risk file warnings from Predictive Debugging cache
+    # Surface files with error_rate > 50% for proactive awareness
+    if risk_data and risk_data.get("data_sessions", 0) >= 5:
+        top_risk = risk_data.get("top_risk_files", [])
+        high_risk = [f for f in top_risk if f.get("risk_score", 0) >= 3.0][:5]
+        if high_risk:
+            output_lines.append("")
+            output_lines.append("■ 고위험 파일 (Predictive Debugging):")
+            for fr in high_risk:
+                fname = fr.get("file", "?")
+                score = fr.get("risk_score", 0)
+                errors = fr.get("error_count", 0)
+                res_rate = fr.get("resolution_rate", 0)
+                output_lines.append(
+                    f"  - {fname}: risk={score:.1f}, errors={errors}, resolved={res_rate:.0%}"
+                )
+
     # Autopilot Mode context injection (conditional)
     # Uses project_dir passed from main() — NOT derived from snapshot path
     # (path derivation fails when best_path points to sessions/ subdirectory)

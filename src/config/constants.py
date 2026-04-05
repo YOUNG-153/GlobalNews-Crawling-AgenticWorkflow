@@ -142,13 +142,17 @@ GC_BETWEEN_STAGES = True
 STAGE_TIMEOUTS = {
     "stage_1_preprocessing": 1800,
     "stage_2_features": 3600,
-    "stage_3_article": 3600,
+    "stage_3_article": 7200,  # Raised from 3600: actual Stage 3 measured 5,851s (2026-03-26)
     "stage_4_aggregation": 3600,
     "stage_5_timeseries": 1800,
     "stage_6_cross": 3600,
     "stage_7_signals": 1800,
     "stage_8_output": 1800,
 }
+
+# Dedup database TTL — entries older than this are purged at pipeline start.
+# D-7: consumed by DedupEngine.purge_expired() in src/crawling/dedup.py
+DEDUP_TTL_DAYS = 90
 
 # Minimum articles required for certain analyses
 MIN_ARTICLES_FOR_TOPICS = 50
