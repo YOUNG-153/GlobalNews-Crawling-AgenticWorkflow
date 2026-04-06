@@ -229,7 +229,7 @@ data/
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                      main.py (CLI)                          │
-│            crawl │ analyze │ full │ status                  │
+│       crawl │ analyze │ full │ status │ insight              │
 ├──────────────────┼──────────────────────────────────────────┤
 │                  │                                          │
 │   ┌──────────────▼──────────────┐                          │
@@ -257,6 +257,16 @@ data/
 │   └─────────────────────────────┘                          │
 │                                                             │
 │   [Shared] config/ │ utils/ │ constants.py                 │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│   ┌─────────────────────────────┐                          │
+│   │  Layer 5: INSIGHT ANALYTICS │  ← Workflow B (독립)     │
+│   │  7 modules (M1-M7)         │                          │
+│   │  27 metrics, multi-date    │                          │
+│   │  ← data/{processed,features,analysis}/ (READ-ONLY)    │
+│   │  → data/insights/{run_id}/ │                          │
+│   └─────────────────────────────┘                          │
+│                                                             │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -265,11 +275,12 @@ data/
 - Layer 2 출력 → `data/processed/`, `data/features/`, `data/analysis/`
 - Layer 3 출력 → `data/output/`
 - Layer 4 입력 ← `data/output/`
+- Layer 5 입력 ← Layer 2 출력 (READ-ONLY), 출력 → `data/insights/`
 
 ### 2.2 모듈 구조
 
 ```
-src/                              (~48,800 LOC)
+src/                              (~55,900 LOC — Workflow A ~48,800 + Workflow B ~7,100)
 ├── config/
 │   └── constants.py              350+ 상수: 경로, 임계값, 스키마
 ├── crawling/                     크롤링 엔진 (17 모듈 + 116 어댑터)
@@ -309,6 +320,18 @@ src/                              (~48,800 LOC)
 ├── storage/                      데이터 I/O
 │   ├── parquet_writer.py         ZSTD 압축 + 원자적 쓰기 (722 lines)
 │   └── sqlite_builder.py         FTS5 + vec 인덱스 (695 lines)
+├── insights/                     Workflow B: 빅데이터 통찰 분석 (§4.4, 12 모듈, ~7,100 LOC)
+│   ├── pipeline.py               통찰 오케스트레이터 (433 lines)
+│   ├── window_assembler.py       다중 날짜 코퍼스 조립 + 지연 로딩 (241 lines)
+│   ├── validators.py             P1 결정론적 검증 — 27개 지표 수학적 경계 (189 lines)
+│   ├── constants.py              27개 지표 임계값 중앙화 (202 lines)
+│   ├── m1_crosslingual.py        교차언어 정보 비대칭 (674 lines)
+│   ├── m2_narrative.py           내러티브 & 프레이밍 (1,181 lines)
+│   ├── m3_entity.py              엔티티 궤적 & 숨은 연결 (927 lines)
+│   ├── m4_temporal.py            시간 패턴 & 캐스케이드 (932 lines)
+│   ├── m5_geopolitical.py        지정학 분석 & BRI (999 lines)
+│   ├── m6_economic.py            경제 인텔리전스 & EPU (950 lines)
+│   └── m7_synthesis.py           종합 보고서 생성 (353 lines)
 └── utils/                        유틸리티
     ├── logging_config.py         구조화 로깅
     ├── config_loader.py          YAML 로딩 + 검증
@@ -605,6 +628,23 @@ Stage 8 (출력) → analysis.parquet + index.sqlite + checksums.md5
 
 **Stage 5와 6의 독립성**: 이 두 단계는 Stage 4의 출력만을 입력으로 사용하며, 서로 의존하지 않는다. 이론적으로는 병렬 실행이 가능하지만, 메모리 제약(C3)으로 순차 실행한다. Stage 7은 Stage 5와 6 모두의 출력을 필요로 한다.
 
+**듀얼 워크플로우 분기점 — Stage 4 이후**:
+
+Stage 4까지의 출력은 두 개의 독립적 워크플로우가 소비한다:
+
+```
+Stage 4 출력 (topics, networks, article_analysis, etc.)
+  │
+  ├──→ Workflow A (Daily): Stage 5-8 (시계열 → 교차분석 → 신호 → 출력)
+  │    매일 실행. 단일 날짜 데이터. data/output/{date}/
+  │
+  └──→ Workflow B (Insight): M1-M7 (교차언어 → 내러티브 → 엔티티 → 시간 → 지정학 → 경제 → 종합)
+       주간/월간/온디맨드. 다중 날짜 윈도우(7/30/90일). data/insights/{run_id}/
+       READ-ONLY 소비. Workflow A 코드에 대한 의존 없음.
+```
+
+상세: §4.4 Workflow B (Insight Analytics Pipeline)
+
 ### 4.2 단계별 상세
 
 #### Stage 1: 전처리 (T01-T06) — ~1.0 GB
@@ -731,7 +771,102 @@ L5 Singularity: 2-of-3 독립 경로 합의 + threshold=0.65
 6. **품질 검증**: 중복 ID 없음, 임베딩 384-dim, NOT NULL 필수 컬럼
 7. **체크섬**: `checksums.md5` 무결성 파일
 
-### 4.3 메모리 관리 전략
+### 4.4 Workflow B: Insight Analytics Pipeline (빅데이터 통찰 분석)
+
+> Workflow A(Daily)의 Stage 1-4 출력이 축적된 후, 다중 날짜 윈도우(7/30/90일)에 대해 구조적 통찰을 생산하는 **완전 분리된 제2 파이프라인**이다.
+
+#### 설계 철학: Producer-Consumer 디커플링
+
+```
+Workflow A (Producer)                Workflow B (Consumer)
+━━━━━━━━━━━━━━━━━━━━━━               ━━━━━━━━━━━━━━━━━━━━━━
+매일 실행                             주간/월간/온디맨드
+단일 날짜                             다중 날짜 윈도우
+src/crawling/ + src/analysis/        src/insights/ (독립 모듈)
+Stage 1-4 Parquet 생산  ──────────→  Stage 1-4 Parquet READ-ONLY 소비
+run_metadata.json (A SOT)            insight_state.json (B SOT)
+data/output/{date}/                  data/insights/{run_id}/
+```
+
+**분리 원칙**: Workflow A의 코드(`src/crawling/`, `src/analysis/`, `src/storage/`)를 **단 한 줄도 import하지 않는다**. `src/insights/`의 모든 모듈은 `src/config/constants.py`(공유 설정)와 자체 모듈만 import한다.
+
+#### 7개 분석 모듈 (M1-M7, 27개 지표)
+
+| 모듈 | 지표 | 최소 데이터 | 핵심 라이브러리 | 설계 타입 |
+|------|------|-----------|---------------|----------|
+| **M1: 교차언어 분석** | CL-1 JSD 비대칭, CL-2 어텐션 갭, CL-3 감성 다이버전스, CL-4 필터 버블 | 7일, 3개 언어 | scipy (JSD, Wasserstein) | Type A (순수 산술) |
+| **M2: 내러티브 분석** | NF-1 프레임 진화, NF-2 변화점 감지, NF-3 HHI 음성 지배, NF-4 미디어 건강, NF-5 정보 흐름, NF-6 출처 신뢰도 | 14일 | networkx, ruptures(opt) | Type A/B |
+| **M3: 엔티티 분석** | EA-1 궤적 분류, EA-2 숨은 연결, EA-3 부상 지수, EA-4 교차언어 도달 | 14일 | networkx | Type A/B |
+| **M4: 시간 패턴** | TP-1 이벤트 캐스케이드, TP-2 정보 속도, TP-3 어텐션 감쇠, TP-4 구조적 주기성 | 14일 | scipy, statsmodels(opt) | Type A |
+| **M5: 지정학 분석** | GI-1 양자관계지수(BRI), GI-2 소프트파워, GI-3 의제설정력, GI-4 갈등-협력 스펙트럼 | 14일 | — | Type A/B |
+| **M6: 경제 분석** | EI-1 다국어 EPU, EI-2 섹터 감성, EI-3 모멘텀, EI-4 내러티브 경제, EI-5 하이프 사이클 | 7일 | numpy | Type A/B |
+| **M7: 종합** | 리포트 생성 + 핵심 발견 추출 | 7일 | — | Type B (템플릿) |
+
+- **Type A**: 순수 산술 (closed-form 수학, ML 추론 없음)
+- **Type B**: 규칙 기반 분류 (결정론적 임계값)
+- **P1 결정론적**: 92% 이상의 로직이 동일 입력 → 동일 출력
+
+#### 데이터 흐름
+
+```
+data/processed/{date}/articles.parquet     ─┐
+data/features/{date}/embeddings.parquet     │
+data/features/{date}/ner.parquet            ├─→ WindowCorpus (컬럼 선택적, 지연 로딩)
+data/features/{date}/tfidf.parquet          │     ↓
+data/analysis/{date}/article_analysis.parquet│   M1-M6 (독립 실행, 모듈 간 gc.collect())
+data/analysis/{date}/topics.parquet         │     ↓
+data/analysis/{date}/networks.parquet      ─┘   M7 종합 (M1-M6 결과 집약)
+                                                  ↓
+                                            data/insights/{run_id}/
+                                              ├── crosslingual/   (M1 Parquet)
+                                              ├── narrative/      (M2 Parquet)
+                                              ├── entity/         (M3 Parquet)
+                                              ├── temporal/       (M4 Parquet)
+                                              ├── geopolitical/   (M5 Parquet)
+                                              ├── economic/       (M6 Parquet)
+                                              └── synthesis/      (M7 보고서)
+                                                  ├── insight_report.md
+                                                  ├── insight_data.json
+                                                  └── key_findings.json
+```
+
+#### SOT 분리
+
+| 항목 | Workflow A | Workflow B |
+|------|-----------|-----------|
+| **상태 파일** | `.claude/state.yaml` (빌드), `run_metadata.json` (런타임) | `data/insights/insight_state.json` |
+| **설정** | `data/config/sources.yaml`, `config/pipeline.yaml` | `data/config/insights.yaml` |
+| **상수** | `CRAWL_*`, `DATA_*_DIR` | `INSIGHT_*` (`src/config/constants.py`에 네임스페이스 분리) |
+| **실행** | `main.py --mode crawl\|analyze\|full` | `main.py --mode insight --window N` |
+
+#### 실행 인터페이스
+
+```bash
+# 월간 통찰 (30일 윈도우)
+.venv/bin/python main.py --mode insight --window 30 --end-date 2026-04-06
+
+# 주간 통찰
+.venv/bin/python main.py --mode insight --window 7
+
+# 특정 모듈만
+.venv/bin/python main.py --mode insight --window 30 --module m1_crosslingual
+```
+
+#### Workflow A Stage 5-8과의 관계
+
+Workflow B는 Workflow A의 Stage 5-8(시계열, 교차분석, 신호, 출력)과 **기능적으로 유사하지만 완전히 독립적**이다:
+
+| 차이점 | Stage 5-8 (Workflow A) | M1-M7 (Workflow B) |
+|--------|----------------------|-------------------|
+| **시간 범위** | 단일 날짜 | 다중 날짜 윈도우 (7-365일) |
+| **관점** | 일일 신호 탐지 (이상치, 버스트) | 구조적 패턴 탐지 (트렌드, 비대칭) |
+| **출력** | signals.parquet (12 columns) | 27개 지표 + 종합 보고서 |
+| **코드** | `src/analysis/stage5-8_*.py` | `src/insights/m1-m7_*.py` |
+| **의존성** | Stage 4 출력 | Stage 1-4 출력 (다중 날짜) |
+
+Stage 5-8은 "오늘 무엇이 튀었는가?"를, Workflow B는 "지난 N일간 구조적으로 무엇이 변하고 있는가?"를 답한다.
+
+### 4.5 메모리 관리 전략
 
 각 단계는 **"로드 → 처리 → 저장 → 해제"** 패턴으로 메모리를 관리한다:
 
@@ -787,6 +922,16 @@ data/
 │   ├── topics.parquet           # 7 columns 토픽
 │   ├── index.sqlite             # FTS5 + vec
 │   └── checksums.md5
+├── insights/                    # Workflow B 출력 (§4.4)
+│   ├── insight_state.json       # Workflow B 런타임 SOT
+│   └── {run_id}/               # 분석 윈도우별 (monthly-2026-03/ 등)
+│       ├── crosslingual/        # M1 Parquet
+│       ├── narrative/           # M2 Parquet
+│       ├── entity/              # M3 Parquet
+│       ├── temporal/            # M4 Parquet
+│       ├── geopolitical/        # M5 Parquet
+│       ├── economic/            # M6 Parquet
+│       └── synthesis/           # M7 보고서
 ├── models/                      # ML 모델 캐시
 ├── logs/                        # 실행 로그
 └── dedup.sqlite                 # 전역 중복 제거 DB (크로스-런)
@@ -960,6 +1105,7 @@ pytest -m "not slow"        # NLP 모델 로딩 제외 (빠른 실행)
 | **Conductor Pattern** (C2) | Claude Code → Python → Bash → 결과 읽기 — C1 제약 대응 |
 | **3-Level Dedup** | URL→Title→SimHash — 뉴스 중복의 다층적 특성 대응 |
 | **Paywall Bypass System** | BrowserRenderer(서브프로세스 Patchright) + AdaptiveExtractor(4-stage CSS) + is_paywall_body(Strong/Weak 26패턴, EN+FR) — 하드 페이월 사이트 5곳 대응 (ADR-054~057) |
+| **Dual Workflow Architecture** | Workflow A(Daily: crawl+analyze) + Workflow B(Insight: M1-M7 구조적 통찰). Producer-Consumer 디커플링. 독립 SOT, 독립 코드, 독립 스케줄 |
 | **HQ Gates (4종)** | HQ1-HQ4 Human-step 품질 검증 — 자동 승인 시 이전 단계 증거 확인 |
 | **Circuit Breaker** (워크플로우) | 3회 연속 ≤5점 개선 시 OPEN — 무진전 재시도 차단 |
 | **Abductive Diagnosis** | 품질 게이트 FAIL 시 사전 증거 수집 + 가설 기반 진단 (AD1-AD10) |
@@ -1004,12 +1150,13 @@ pytest -m "not slow"        # NLP 모델 로딩 제외 (빠른 실행)
 | ADR-064 | D-7 Instance 13: ENABLED_DEFAULT SOT 중앙화 + AST 교차 검증(ED1-ED7) + `validate_enabled_default_sync.py` P1 스크립트 + `crawler.py` SOT 소비자 추가 | 사이트 활성화 상태 불일치 근절 |
 | ADR-065~067 | SiteDeadline Fairness Yield + P1 `deadline_yielded` 플래그 + CRAWL_NEVER_ABANDON Multi-Pass + CrawlState-first 완료 판정 + MAX_ARTICLES 1000→5000 | **크롤링 절대 원칙 실현** — 116개 사이트 완벽한 크롤링 완수 보장 |
 | Post-ADR-067 | Bypass Discovery Fallback + Producer-Consumer 계약 정합 + P1 로그 포맷 봉쇄 + `무한 while-loop` → 바운디드 `MULTI_PASS_MAX_EXTRA=10` 루프 + `crawl_exhausted_sites.json` 실패 리포트 + `check_crawl_progress.py` SOT 재사용(config_loader, constants.py 임포트) | P1 할루시네이션 봉쇄 — 하드코딩·로직 중복 근절 |
+| Workflow B | 빅데이터 통찰 분석 파이프라인 (7개 모듈 M1-M7, 27개 지표). `src/insights/` 완전 독립 모듈 (7,092 LOC). Stage 1-4 Parquet 읽기 전용 소비. Producer-Consumer 디커플링. `main.py --mode insight` CLI 인터페이스 | 듀얼 워크플로우 아키텍처 — 일일 신호 탐지(A) + 구조적 통찰(B) |
 
 ### 12.4 구축 규모
 
 | 지표 | 값 |
 |------|-----|
-| 소스 코드 | ~48,800 LOC (src/) |
+| 소스 코드 | ~55,900 LOC (src/ — Workflow A ~48,800 + Workflow B ~7,100) |
 | 테스트 코드 | ~24,700 LOC (tests/) |
 | 총 코드 | ~73,500 LOC |
 | Python 모듈 | 171개 |
@@ -1029,4 +1176,5 @@ pytest -m "not slow"        # NLP 모델 로딩 제외 (빠른 실행)
 | [GLOBALNEWS-USER-MANUAL.md](GLOBALNEWS-USER-MANUAL.md) | 일상 운영 가이드 |
 | [prompt/workflow.md](prompt/workflow.md) | 20단계 워크플로우 설계도 (구축 과정 기록) |
 | [config/sources.yaml](config/sources.yaml) | 116개 사이트 설정 |
+| [research/bigdata-insight-workflow-design.md](research/bigdata-insight-workflow-design.md) | Workflow B 설계 문서 (M1-M7, 27개 지표) |
 | [AGENTICWORKFLOW-ARCHITECTURE-AND-PHILOSOPHY.md](AGENTICWORKFLOW-ARCHITECTURE-AND-PHILOSOPHY.md) | 부모 프레임워크 아키텍처 |
